@@ -1,0 +1,62 @@
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[project]
+name = "sectvoice-reader"
+version = "0.3.0"
+description = "Windows local continuous text reader with installable voice engine packages"
+readme = "README.md"
+requires-python = ">=3.10,<3.13"
+license = { file = "LICENSE" }
+authors = [{ name = "BestWishes" }]
+keywords = ["tts", "voice-cloning", "reader", "windows", "offline"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Environment :: Win32 (MS Windows)",
+  "License :: OSI Approved :: Apache Software License",
+  "Operating System :: Microsoft :: Windows :: Windows 10",
+  "Operating System :: Microsoft :: Windows :: Windows 11",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+]
+dependencies = [
+  "numpy>=1.26,<3",
+  "opencc-python-reimplemented==0.1.7",
+  "platformdirs>=4.3,<5",
+  "psutil>=6,<8",
+  "PySide6>=6.8,<7",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.3,<10",
+  "pytest-cov>=6,<8",
+  "pytest-qt>=4.4,<5",
+  "pytest-timeout>=2.3,<3",
+]
+
+[project.scripts]
+sectvoice = "sectvoice.app:main"
+sectvoice-package = "sectvoice.package_cli:entrypoint"
+sectvoice-benchmark = "sectvoice.benchmark.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/BestWishes/SectVoice"
+Downloads = "https://github.com/BestWishes/SectVoice-Downloads/releases/latest"
+Issues = "https://github.com/BestWishes/SectVoice/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/sectvoice"]
+
+[tool.pytest.ini_options]
+addopts = "-ra --strict-markers"
+testpaths = ["tests"]
+markers = [
+  "real_audio: requires a locally installed real voice engine",
+  "long_run: long-running stability test",
+]
+
+[tool.coverage.run]
+branch = true
+source = ["sectvoice"]

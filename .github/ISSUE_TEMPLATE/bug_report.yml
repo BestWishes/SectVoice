@@ -1,0 +1,46 @@
+name: Bug report
+description: Report a reproducible SectVoice problem
+title: "[Bug] "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: Do not upload private documents, reference audio, voices, VoicePackages or access tokens.
+  - type: input
+    id: version
+    attributes:
+      label: SectVoice version
+      placeholder: 0.3.0
+    validations:
+      required: true
+  - type: dropdown
+    id: tier
+    attributes:
+      label: Voice tier
+      options: [Reader only, Basic, Standard, Both]
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Reproduction steps
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior and non-sensitive logs
+    validations:
+      required: true
+  - type: textarea
+    id: system
+    attributes:
+      label: Windows, CPU, RAM, GPU and driver
+    validations:
+      required: true

@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "package_id": "sectvoice.standard.gpt-sovits-v2proplus",
+  "tier": "standard",
+  "display_name": "中级语音包",
+  "engine_id": "gpt-sovits-v2proplus",
+  "engine_version": "d523079f-sv3",
+  "payload_format_version": "gpt-sovits-prompt-cache-v1",
+  "python": "3.10",
+  "execution_devices": ["cuda"],
+  "capabilities": {
+    "streaming_audio": true,
+    "cancellable_generation": true,
+    "native_speed": true,
+    "native_speed_scale": 1.0,
+    "gpu_compute_pacing": {
+      "mode": "balanced",
+      "active_fraction": 0.58,
+      "token_interval": 8,
+      "maximum_token_pause_seconds": 0.08,
+      "maximum_chunk_pause_seconds": 0.12,
+      "maximum_realtime_factor": 0.72
+    },
+    "window_boundary_timing": "asr",
+    "max_request_chars": 96,
+    "emotions": [],
+    "styles": [],
+    "languages": ["zh", "en", "ja", "ko", "yue"],
+    "pcm": {"sample_rate": 32000, "channels": 1, "sample_format": "s16le"},
+    "reference_seconds": {"minimum": 3.0, "maximum": 10.0}
+  },
+  "upstream": {
+    "source": "https://github.com/RVC-Boss/GPT-SoVITS",
+    "commit": "d523079fc05d9a8028d6085bffe4a2757c32abb6",
+    "license": "MIT",
+    "models_repo": "lj1995/GPT-SoVITS",
+    "models_revision": "336b2ec4e8d4ac74740798dd40af44e74659ecaf"
+  },
+  "selection_status": "approved",
+  "validation_status": "passed"
+}

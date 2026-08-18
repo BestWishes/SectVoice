@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "package_id": "sectvoice.basic.moss-nano-onnx",
+  "tier": "basic",
+  "display_name": "基础语音包",
+  "engine_id": "moss-nano-onnx",
+  "engine_version": "cc7bdf19",
+  "payload_format_version": "moss-prompt-codes-v1",
+  "python": "3.10",
+  "execution_devices": ["cpu"],
+  "capabilities": {
+    "streaming_audio": true,
+    "cancellable_generation": true,
+    "native_speed": false,
+    "worker_recycle_rss_mib": 4608,
+    "window_boundary_timing": "asr",
+    "max_request_chars": 64,
+    "emotions": [],
+    "styles": [],
+    "languages": ["zh", "en", "de", "es", "fr", "ja", "it", "hu", "ko", "ru", "fa", "ar", "pl", "pt", "cs", "da", "sv", "el", "tr"],
+    "pcm": {"sample_rate": 48000, "channels": 2, "sample_format": "f32le"},
+    "reference_seconds": {"minimum": 3.0, "maximum": 30.0}
+  },
+  "upstream": {
+    "source": "https://github.com/OpenMOSS/MOSS-TTS-Nano",
+    "commit": "cc7bdf19c7639c0870dab22045a33b442760f6be",
+    "license": "Apache-2.0",
+    "models": [
+      {"repo": "OpenMOSS-Team/MOSS-TTS-Nano-100M-ONNX", "revision": "f52645cb467506d8e18e746ddd59482685b74e58"},
+      {"repo": "OpenMOSS-Team/MOSS-Audio-Tokenizer-Nano-ONNX", "revision": "ceff0d0749bfb3fa2d61149794ec6feef0d1e1ae"}
+    ]
+  },
+  "selection_status": "approved",
+  "validation_status": "passed"
+}

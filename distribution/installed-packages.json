@@ -1,0 +1,14 @@
+{
+  "basic": {
+    "manifest": "runtime/engines/basic/moss-nano-onnx/cc7bdf19/package/package-manifest.json",
+    "runtime": "runtime/engines/basic/moss-nano-onnx/cc7bdf19",
+    "model": "models/basic/moss-nano-onnx/f52645cb",
+    "smoke": "artifacts/smoke/basic-final-package-20260810/package-smoke.json"
+  },
+  "standard": {
+    "manifest": "runtime/engines/standard/gpt-sovits/d523079f/package/package-manifest.json",
+    "runtime": "runtime/engines/standard/gpt-sovits/d523079f",
+    "model": "models/standard/gpt-sovits-v2proplus/336b2ec4",
+    "smoke": "artifacts/smoke/standard-final-package-20260810/package-smoke.json"
+  }
+}
