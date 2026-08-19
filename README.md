@@ -8,9 +8,13 @@ SectVoice 不是“输入一段文字、等待生成一个 WAV”的配音工具
 
 ## 界面预览
 
-### 连续朗读与双击跳转
+### 暖杏纸张主题：连续朗读与双击跳转
 
-![SectVoice Reader 主界面](docs/images/reader-main.png)
+![SectVoice Reader 暖杏纸张主题主界面](docs/images/reader-main-warm.png)
+
+### 深夜阅读主题：连续朗读与双击跳转
+
+![SectVoice Reader 深夜阅读主题主界面](docs/images/reader-main-night.png)
 
 ### 创建永久声音档案
 
