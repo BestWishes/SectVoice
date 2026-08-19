@@ -4,11 +4,11 @@ Last updated: 2026-08-19
 
 ## Current release line
 
-- Stable public source and downloadable release: v0.3.0.
-- v0.3.1 release candidate: unified Windows branding and persistent Reader themes; Basic and Standard model assets remain the immutable v0.3.0 downloads.
+- Stable public source and downloadable release: v0.3.1.
+- v0.3.1 adds unified Windows branding and persistent Reader themes; Basic and Standard model assets remain the existing immutable downloads and were not uploaded again.
 - Reader, Basic, Standard, reusable voice profiles, continuous windows, multi-role reading, rapid seek, cache reuse, package management and in-app updates are implemented.
 
-## v0.3.1 release candidate
+## v0.3.1 release
 
 - Uses the supplied blue book/speaker artwork as one normalized multi-resolution Windows ICO (16 through 256 px) and a 512 px source PNG.
 - Applies a stable Windows AppUserModelID and the same icon to QApplication/windows, Reader and package-helper EXEs, installer, shortcuts and uninstall entry.
@@ -20,6 +20,7 @@ Last updated: 2026-08-19
 - Inno Setup 6.7.3 successfully compiled the final installer script against a minimal Core fixture, and the resulting installer icon was extracted and visually checked.
 - Corrects one legacy test that assumed every source checkout folder must literally be named `source`; it now verifies both the installed `source` layout and arbitrarily named public clones without changing runtime path behavior.
 - Regression status in the public checkout: 171 passed.
+- Published the source tag and Windows release on 2026-08-19; the remote `latest` update manifest resolves to v0.3.1 and the installer asset size matches the local signed-off manifest.
 
 ## v0.3.0 changes
 
