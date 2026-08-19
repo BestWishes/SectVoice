@@ -24,11 +24,12 @@ SectVoice 不是“输入一段文字、等待生成一个 WAV”的配音工具
 
 ![语音引擎和模型包管理](docs/images/engine-packages.png)
 
-截图中的声音均为文档示例；公开安装包不内置克隆声音、参考录音或用户数据。
+公开安装包内置“体验女声”和“体验男声”，首次启动后即可选择；它们来自 OpenMOSS/MOSS-TTS-Nano Apache-2.0 示例录音。除此之外，截图中的其它声音均为文档示例，安装包不包含用户声音、文档或数据库。详见 [BUILTIN_VOICES.md](BUILTIN_VOICES.md)。
 
 ## 主要能力
 
 - 本地创建永久 `VoiceProfile`，以后朗读新文本不重复分析参考录音。
+- 首次启动一次性导入体验女声和体验男声，两档均已有可复用 Payload；用户删除后不会被强制恢复。
 - UTF-8 TXT 导入、直接粘贴、自动保存、恢复阅读位置、修改 Reader 内显示名称和删除文档。
 - 暖杏纸张、柔和奶油、静谧青绿和深夜阅读四套主题，可即时切换并自动恢复上次选择。
 - 播放、暂停、继续、停止、上一句、下一句、失败重试和跳过当前块。
@@ -54,8 +55,8 @@ Reader 只有一个。Basic 和 Standard 是可独立安装的 Engine/Model Pack
 1. 从 [Releases 下载页](https://github.com/BestWishes/SectVoice-Downloads/releases/latest) 下载 `SectVoice-Setup-<版本>-x64.exe` 与 `SHA256SUMS.txt`。
 2. 核对 SHA-256 后运行安装器，选择 Reader Core，并按设备选择 Basic、Standard 或两者。
 3. 首次启动完成环境检查。
-4. 在“新建声音”中选择 3～10 秒清晰、单人、无重叠说话和明显背景音乐的参考片段。
-5. 校正自动转写并试听测试语音，确认后保存声音档案。
+4. 可以直接选择内置的体验女声或体验男声开始朗读，无需先准备参考录音。
+5. 如需自己的声音，在“新建声音”中选择 3～10 秒清晰、单人、无重叠说话和明显背景音乐的参考片段，校正转写并保存。
 6. 粘贴文字或导入 UTF-8 TXT，选择声音后播放；双击正文即可跳转。
 
 安装器目前未代码签名，Windows 可能显示“未知发布者”。请只从项目 Release 下载并核对哈希。
@@ -80,7 +81,7 @@ SectVoice 不会把参考录音、转写、文档或生成语音上传到项目�
 
 SectVoice 自有源代码采用 [Apache License 2.0](LICENSE)，允许修改、再分发和闭源衍生开发，但必须保留许可证与适用的声明。
 
-引擎、模型、Qt/PySide6、FFmpeg、Rubber Band、ASR 模型及其它依赖保留各自许可证。当前官方 Windows 组合包含 GPLv3 FFmpeg 构建和 GPL 版 Rubber Band；重新分发该组合时必须履行相应 GPL 义务。希望发布闭源产品的下游开发者，应改用许可证兼容的媒体/变速组件，或自行取得 Rubber Band 商业许可。完整边界见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) 与 [MODEL_LICENSES.md](MODEL_LICENSES.md)。
+内置体验声音使用 OpenMOSS/MOSS-TTS-Nano 仓库的 Apache-2.0 示例音频并保留归属。引擎、模型、Qt/PySide6、FFmpeg、Rubber Band、ASR 模型及其它依赖保留各自许可证。当前官方 Windows 组合包含 GPLv3 FFmpeg 构建和 GPL 版 Rubber Band；重新分发该组合时必须履行相应 GPL 义务。希望发布闭源产品的下游开发者，应改用许可证兼容的媒体/变速组件，或自行取得 Rubber Band 商业许可。完整边界见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) 与 [MODEL_LICENSES.md](MODEL_LICENSES.md)。
 
 ## 贡献与安全
 

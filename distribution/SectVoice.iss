@@ -1,9 +1,9 @@
 #ifndef AppVersion
-  #define AppVersion "0.3.2"
+  #define AppVersion "0.3.3"
 #endif
 #define CatalogUrl "https://github.com/BestWishes/SectVoice-Downloads/releases/latest/download/catalog.json"
 #ifndef CoreInstalledBytes
-  #define CoreInstalledBytes 1049524708
+  #define CoreInstalledBytes 1055264569
 #endif
 #ifndef BasicDownloadBytes
   #define BasicDownloadBytes 420796975

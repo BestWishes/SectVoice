@@ -3,8 +3,9 @@ from __future__ import annotations
 import argparse
 from dataclasses import dataclass
 import hashlib
+import io
 import json
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 import shutil
 import sys
 import tempfile
@@ -395,6 +396,7 @@ def audit_no_voice_assets(output: Path, private_roots: tuple[Path, ...] = ()) ->
         )
     for archive_path in output.glob("*.zip"):
         with zipfile.ZipFile(archive_path) as archive:
+            approved_voices = _approved_builtin_voices(archive, bad)
             for info in archive.infolist():
                 name = info.filename
                 if Path(name).suffix.lower() in AUDIO_SUFFIXES:
@@ -404,7 +406,20 @@ def audit_no_voice_assets(output: Path, private_roots: tuple[Path, ...] = ()) ->
                     name
                 ).suffix.lower() == ".incomplete":
                     bad.append(f"{archive_path.name}:{name}:transient-cache")
-                if any(token in lowered for token in ("voicepkg", "sectvoice.db")):
+                if "voicepkg" in lowered:
+                    approved = approved_voices.get(PurePosixPath(name).name)
+                    if approved is None or not _is_builtin_voice_member(name):
+                        bad.append(f"{archive_path.name}:{name}")
+                    else:
+                        _audit_builtin_voice_package(
+                            archive_path.name,
+                            name,
+                            archive.read(info),
+                            approved,
+                            markers,
+                            bad,
+                        )
+                elif "sectvoice.db" in lowered:
                     bad.append(f"{archive_path.name}:{name}")
                 if (
                     Path(name).suffix.lower() in TEXT_SUFFIXES
@@ -420,6 +435,106 @@ def audit_no_voice_assets(output: Path, private_roots: tuple[Path, ...] = ()) ->
                 bad.append(f"{path.name}:private-text")
     if bad:
         raise RuntimeError("公开资产包含禁止的声音/数据文件：" + ", ".join(bad[:10]))
+
+
+def _approved_builtin_voices(
+    archive: zipfile.ZipFile, bad: list[str]
+) -> dict[str, dict[str, object]]:
+    catalogs = [
+        info
+        for info in archive.infolist()
+        if tuple(PurePosixPath(info.filename).parts[-4:])
+        == ("sectvoice", "assets", "builtin_voices", "catalog.json")
+    ]
+    if not catalogs:
+        return {}
+    if len(catalogs) != 1:
+        bad.append(f"{Path(archive.filename or 'archive').name}:duplicate-builtin-catalog")
+        return {}
+    try:
+        catalog = json.loads(archive.read(catalogs[0]).decode("utf-8"))
+    except (UnicodeDecodeError, ValueError):
+        bad.append(f"{Path(archive.filename or 'archive').name}:invalid-builtin-catalog")
+        return {}
+    if catalog.get("schema_version") != 1:
+        bad.append(f"{Path(archive.filename or 'archive').name}:unsupported-builtin-catalog")
+        return {}
+    approved: dict[str, dict[str, object]] = {}
+    for item in catalog.get("voices") or ():
+        package_name = str(item.get("package") or "")
+        digest = str(item.get("sha256") or "").lower()
+        if (
+            PurePosixPath(package_name).name != package_name
+            or not package_name.endswith(".voicepkg")
+            or len(digest) != 64
+            or any(character not in "0123456789abcdef" for character in digest)
+            or package_name in approved
+        ):
+            bad.append(
+                f"{Path(archive.filename or 'archive').name}:invalid-builtin-entry"
+            )
+            continue
+        approved[package_name] = dict(item)
+    return approved
+
+
+def _is_builtin_voice_member(name: str) -> bool:
+    parts = PurePosixPath(name).parts
+    return len(parts) >= 4 and tuple(parts[-4:-1]) == (
+        "sectvoice",
+        "assets",
+        "builtin_voices",
+    )
+
+
+def _audit_builtin_voice_package(
+    outer_name: str,
+    member_name: str,
+    payload: bytes,
+    approved: dict[str, object],
+    private_markers: list[bytes],
+    bad: list[str],
+) -> None:
+    label = f"{outer_name}:{member_name}"
+    if hashlib.sha256(payload).hexdigest() != str(approved["sha256"]):
+        bad.append(f"{label}:builtin-hash")
+        return
+    try:
+        with zipfile.ZipFile(io.BytesIO(payload)) as package:
+            names = set(package.namelist())
+            if "manifest.json" not in names:
+                bad.append(f"{label}:missing-manifest")
+                return
+            manifest = json.loads(package.read("manifest.json").decode("utf-8"))
+            voice = manifest.get("voice") or {}
+            if (
+                str(voice.get("voice_id")) != str(approved.get("voice_id"))
+                or voice.get("name") != approved.get("name")
+            ):
+                bad.append(f"{label}:identity")
+            listed: set[str] = set()
+            for entry in manifest.get("files") or ():
+                nested_name = str(entry.get("path") or "")
+                nested_path = PurePosixPath(nested_name)
+                if nested_path.is_absolute() or ".." in nested_path.parts:
+                    bad.append(f"{label}:unsafe-path")
+                    continue
+                listed.add(nested_name)
+                try:
+                    content = package.read(nested_name)
+                except KeyError:
+                    bad.append(f"{label}:missing-file")
+                    continue
+                if len(content) != int(entry.get("size") or -1):
+                    bad.append(f"{label}:size")
+                if hashlib.sha256(content).hexdigest() != entry.get("sha256"):
+                    bad.append(f"{label}:nested-hash")
+                if any(marker in content for marker in private_markers):
+                    bad.append(f"{label}:private-content")
+            if listed != names - {"manifest.json"}:
+                bad.append(f"{label}:unlisted-content")
+    except (KeyError, TypeError, ValueError, zipfile.BadZipFile):
+        bad.append(f"{label}:invalid-package")
 
 
 def main() -> int:

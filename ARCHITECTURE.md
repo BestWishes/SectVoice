@@ -22,6 +22,7 @@ VoiceCore禁止调用Reader UI。引擎包禁止直接操作Reader文档、字�
 ### VoiceCore
 
 - VoiceLibrary、VoiceProfile、VoicePackage。
+- BuiltinVoiceSeeder从只读、哈希固定的应用资源一次性导入体验声音；导入完成标记保存在app_settings，删除声音不清除标记，因此不会反复复活。
 - VoiceCompiler编排和Payload状态。
 - VoiceRuntime、VoiceSession、EngineRegistry。
 - StreamingAudioBuffer和按秒水位控制。

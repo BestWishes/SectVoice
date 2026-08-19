@@ -1,7 +1,14 @@
 SectVoice Reader
 Copyright 2026 BestWishes
 
-This product includes software developed by third parties. See
-THIRD_PARTY_NOTICES.md and MODEL_LICENSES.md for attribution and license
-boundaries. No cloned voice, reference recording, document or user database is
-part of the licensed source distribution.
+This product includes software and sample audio developed by third parties. See
+THIRD_PARTY_NOTICES.md, MODEL_LICENSES.md and BUILTIN_VOICES.md for attribution
+and license boundaries.
+
+The bundled Experience Female and Experience Male VoiceProfiles derive from
+OpenMOSS/MOSS-TTS-Nano assets/audio/zh_4.wav and assets/audio/zh_3.wav at
+revision cc7bdf19c7639c0870dab22045a33b442760f6be, Copyright 2026 OpenMOSS
+Team, Fudan University, SII and MOSI, licensed under Apache-2.0.
+
+No user-created voice, document, database, cache or generated reading audio is
+part of the source or official release.

@@ -8,6 +8,7 @@ __pycache__/
 *.flac
 *.m4a
 *.voicepkg
+!src/sectvoice/assets/builtin_voices/*.voicepkg
 .venv/
 dist/
 build/

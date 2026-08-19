@@ -9,3 +9,5 @@ Do not use SectVoice for impersonation, fraud, deceptive political content, hara
 VoicePackages can reproduce a person's vocal identity. Treat them as sensitive files. Share them only with explicit authorization and through a trusted channel.
 
 The project provides software, not permission to use any particular voice, recording, text or model output.
+
+The built-in experience voices exist only to make first use possible without finding a recording. Their inclusion does not authorize presenting generated speech as a real statement by any identifiable speaker.

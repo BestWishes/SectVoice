@@ -1,5 +1,10 @@
+import hashlib
+import io
+import json
 from pathlib import Path
 import zipfile
+
+import pytest
 
 from scripts.build_release import (
     SourceFile,
@@ -187,6 +192,76 @@ def test_release_audit_rejects_built_in_voice_audio(tmp_path: Path) -> None:
         assert "禁止" in str(exc)
     else:
         raise AssertionError("voice audio must never enter a public asset")
+
+
+def _approved_voice_fixture() -> tuple[bytes, bytes]:
+    source = b"RIFF-approved-demo"
+    transcript = "体验声音。".encode("utf-8")
+    files = [
+        {
+            "path": "source/original.wav",
+            "size": len(source),
+            "sha256": hashlib.sha256(source).hexdigest(),
+        },
+        {
+            "path": "transcript/reference.txt",
+            "size": len(transcript),
+            "sha256": hashlib.sha256(transcript).hexdigest(),
+        },
+    ]
+    manifest = {
+        "schema_version": 1,
+        "voice": {
+            "voice_id": "00000000-0000-0000-0000-000000000001",
+            "name": "体验声音",
+        },
+        "files": files,
+    }
+    buffer = io.BytesIO()
+    with zipfile.ZipFile(buffer, "w") as package:
+        package.writestr("source/original.wav", source)
+        package.writestr("transcript/reference.txt", transcript)
+        package.writestr("manifest.json", json.dumps(manifest))
+    payload = buffer.getvalue()
+    catalog = {
+        "schema_version": 1,
+        "voices": [
+            {
+                "voice_id": manifest["voice"]["voice_id"],
+                "name": manifest["voice"]["name"],
+                "package": "approved.voicepkg",
+                "sha256": hashlib.sha256(payload).hexdigest(),
+            }
+        ],
+    }
+    return payload, json.dumps(catalog).encode("utf-8")
+
+
+def test_release_audit_allows_only_hash_pinned_catalogued_builtin_voice(
+    tmp_path: Path,
+) -> None:
+    payload, catalog = _approved_voice_fixture()
+    archive = tmp_path / "core.zip"
+    root = "app/_internal/sectvoice/assets/builtin_voices"
+    with zipfile.ZipFile(archive, "w") as output:
+        output.writestr(f"{root}/catalog.json", catalog)
+        output.writestr(f"{root}/approved.voicepkg", payload)
+
+    audit_no_voice_assets(tmp_path)
+
+
+def test_release_audit_rejects_tampered_catalogued_builtin_voice(
+    tmp_path: Path,
+) -> None:
+    payload, catalog = _approved_voice_fixture()
+    archive = tmp_path / "core.zip"
+    root = "app/_internal/sectvoice/assets/builtin_voices"
+    with zipfile.ZipFile(archive, "w") as output:
+        output.writestr(f"{root}/catalog.json", catalog)
+        output.writestr(f"{root}/approved.voicepkg", payload + b"tampered")
+
+    with pytest.raises(RuntimeError, match="禁止"):
+        audit_no_voice_assets(tmp_path)
 
 
 def test_release_audit_rejects_transient_download_cache(tmp_path: Path) -> None:
