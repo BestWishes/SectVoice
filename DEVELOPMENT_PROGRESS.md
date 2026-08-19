@@ -5,10 +5,10 @@ Last updated: 2026-08-19
 ## Current release line
 
 - Stable public source and downloadable release: v0.3.0.
-- Current local unreleased work: unified Windows branding and persistent Reader themes.
+- v0.3.1 release candidate: unified Windows branding and persistent Reader themes; Basic and Standard model assets remain the immutable v0.3.0 downloads.
 - Reader, Basic, Standard, reusable voice profiles, continuous windows, multi-role reading, rapid seek, cache reuse, package management and in-app updates are implemented.
 
-## Current unreleased changes
+## v0.3.1 release candidate
 
 - Uses the supplied blue book/speaker artwork as one normalized multi-resolution Windows ICO (16 through 256 px) and a 512 px source PNG.
 - Applies a stable Windows AppUserModelID and the same icon to QApplication/windows, Reader and package-helper EXEs, installer, shortcuts and uninstall entry.
@@ -37,7 +37,8 @@ Last updated: 2026-08-19
 
 | Reference | Purpose |
 |---|---|
-| `v0.3.0` | Current public open-source/release baseline before theme and branding work |
+| `v0.3.1` | Reader theme and Windows branding release; reuses the unchanged v0.3.0 engine packages |
+| `v0.3.0` | Public open-source/release baseline before theme and branding work |
 | `v0.2.5` | Stable release with Standard GPU pacing |
 | `v0.2.4-stable-baseline` | Stable state before GPU pacing work |
 | `v15-stable-baseline` | Stable state before Windows distribution work |
@@ -50,7 +51,7 @@ Last updated: 2026-08-19
 - Release privacy audit and SHA-256 manifest pass.
 - The frozen Reader and package CLI start successfully from the finalized Core tree.
 - A true Inno install cannot finish inside the current managed sandbox because registry and Start Menu writes are denied; the same installer must receive one final clean-machine install check after remote publication.
-- The theme/branding work is committed locally but intentionally not published as a new release yet.
+- The v0.3.1 Reader release reuses the unchanged v0.3.0 Basic and Standard assets instead of uploading several gigabytes of model data again.
 
 ## Known boundaries
 

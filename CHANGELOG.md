@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.3.1 - 2026-08-19
 
 - Added a unified SectVoice Windows icon for the taskbar, frozen executable, installer, shortcuts and uninstaller.
 - Added four persistent Reader themes: Warm Paper, Soft Cream, Quiet Sage and Night Reading.
