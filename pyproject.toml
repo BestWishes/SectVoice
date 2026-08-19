@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "sectvoice-reader"
-version = "0.3.1"
+version = "0.3.2"
 description = "Windows local continuous text reader with installable voice engine packages"
 readme = "README.md"
 requires-python = ">=3.10,<3.13"

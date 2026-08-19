@@ -41,6 +41,8 @@ class WindowAudioLayout:
         for index, item in enumerate(self.unit_ranges):
             if item.unit_index != index:
                 raise ValueError("window unit indexes must be contiguous")
+            if item.end_frame <= item.start_frame:
+                raise ValueError("window SpeechUnit ranges must contain audible frames")
             if item.start_frame < previous_end or item.end_frame > self.total_frames:
                 raise ValueError("window PCM ranges overlap or exceed the source")
             previous_end = item.end_frame
@@ -437,18 +439,29 @@ def scale_window_layout(
 
     if new_total_frames <= 0:
         raise ValueError("new_total_frames must be positive")
+    unit_count = len(layout.unit_ranges)
+    if new_total_frames < unit_count:
+        raise ValueError("time-stretched PCM is too short for every SpeechUnit")
     ratio = new_total_frames / layout.total_frames
     ranges: list[UnitFrameRange] = []
     previous_end = 0
     for index, item in enumerate(layout.unit_ranges):
-        start = max(previous_end, int(round(item.start_frame * ratio)))
-        end = max(start, int(round(item.end_frame * ratio)))
+        remaining_units = unit_count - index - 1
+        maximum_start = new_total_frames - remaining_units - 1
+        start = min(
+            maximum_start,
+            max(previous_end, int(round(item.start_frame * ratio))),
+        )
+        maximum_end = new_total_frames - remaining_units
+        end = min(
+            maximum_end,
+            max(start + 1, int(round(item.end_frame * ratio))),
+        )
         if (
-            index == len(layout.unit_ranges) - 1
+            index == unit_count - 1
             and item.end_frame == layout.total_frames
         ):
             end = new_total_frames
-        end = min(new_total_frames, end)
         ranges.append(
             UnitFrameRange(item.unit_index, start, end, item.boundary_confidence)
         )
@@ -695,13 +708,21 @@ def _text_fingerprints(texts: Sequence[str]) -> tuple[str, ...]:
 def _proportional_layout(
     total_frames: int, unit_texts: Sequence[str]
 ) -> WindowAudioLayout:
+    if total_frames < len(unit_texts):
+        raise ValueError("window PCM is too short for every SpeechUnit")
     weights = np.asarray([_speech_weight(text) for text in unit_texts], dtype=np.float64)
     cumulative = np.cumsum(weights) / float(np.sum(weights))
     ranges: list[UnitFrameRange] = []
     start = 0
     for index in range(len(unit_texts)):
-        end = total_frames if index == len(unit_texts) - 1 else int(round(total_frames * cumulative[index]))
-        end = max(start, min(total_frames, end))
+        remaining_units = len(unit_texts) - index - 1
+        maximum_end = total_frames - remaining_units
+        proposed_end = (
+            total_frames
+            if index == len(unit_texts) - 1
+            else int(round(total_frames * cumulative[index]))
+        )
+        end = min(maximum_end, max(start + 1, proposed_end))
         ranges.append(UnitFrameRange(index, start, end, "proportional"))
         start = end
     return WindowAudioLayout(total_frames, tuple(ranges), _text_fingerprints(unit_texts))

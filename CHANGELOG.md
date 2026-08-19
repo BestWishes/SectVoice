@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.3.2 - 2026-08-19
+
+- Unified the Play, Create Voice and package-install controls with the ordinary button appearance instead of leaving them permanently highlighted.
+- Prevented extreme-short final SpeechUnits from receiving an empty PCM range during continuous-window alignment.
+- Added automatic complete-unit retry/splitting and invalid-cache eviction so this boundary condition no longer stops long reading or silently skips source text.
+- Added full runtime traceback logging for unexpected generation failures.
+
 ## 0.3.1 - 2026-08-19
 
 - Added a unified SectVoice Windows icon for the taskbar, frozen executable, installer, shortcuts and uninstaller.

@@ -75,8 +75,6 @@ class PackageManagerDialog(QDialog):
         self.refresh_catalog_button = QPushButton("刷新可下载包")
         self.install_basic_button = QPushButton("下载安装基础包")
         self.install_standard_button = QPushButton("下载安装中级包")
-        self.install_basic_button.setProperty("kind", "primary")
-        self.install_standard_button.setProperty("kind", "primary")
         self.install_basic_button.setEnabled(False)
         self.install_standard_button.setEnabled(False)
         online.addWidget(self.refresh_catalog_button)
