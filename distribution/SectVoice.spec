@@ -6,9 +6,11 @@ from PyInstaller.utils.hooks import collect_data_files
 source_root = Path(SPECPATH).parent
 opencc_datas = collect_data_files("opencc")
 icon_path = source_root / "src" / "sectvoice" / "assets" / "VoiceIcon.ico"
+builtin_voice_root = source_root / "src" / "sectvoice" / "assets" / "builtin_voices"
 branding_datas = [
     (str(icon_path), "sectvoice/assets"),
     (str(icon_path.with_suffix(".png")), "sectvoice/assets"),
+    (str(builtin_voice_root), "sectvoice/assets/builtin_voices"),
 ]
 reader_analysis = Analysis(
     [str(source_root / "src" / "sectvoice" / "__main__.py")],

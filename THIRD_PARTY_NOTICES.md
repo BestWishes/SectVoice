@@ -28,10 +28,14 @@ SectVoice invokes FFmpeg as a separate process; no FFmpeg library is linked into
 
 MOSS-TTS-Nano code and the pinned ONNX model are recorded as Apache-2.0. The package carries the upstream Apache licence and its dependency metadata.
 
+## Built-in experience voices
+
+The Reader Core includes two VoicePackages derived from the official MOSS-TTS-Nano sample files `assets/audio/zh_4.wav` and `assets/audio/zh_3.wav` at revision `cc7bdf19c7639c0870dab22045a33b442760f6be`. The upstream repository and those sample files are distributed under its root Apache-2.0 licence, Copyright 2026 OpenMOSS Team, Fudan University, SII and MOSI. The VoicePackages contain normalized references plus Basic and Standard engine-private payloads derived from those samples. Exact source and package hashes are recorded in `BUILTIN_VOICES.md`.
+
 ## Standard package
 
 GPT-SoVITS source/model are recorded as MIT. G2PW resources retain their upstream licence. The included fastText `lid.176.bin` model is CC BY-SA 3.0 and requires attribution. Python dependencies retain their installed metadata and licence files. The unused GPL `Distance` dependency declared by `g2p_en` is explicitly excluded from the public Standard runtime.
 
 ## User content
 
-No reference recording, cloned voice, VoiceProfile, EnginePayload, generated speech, document, user database or internal test sample is included in the public source or release assets.
+Apart from the two catalogued and attributed built-in experience VoicePackages, no user reference recording, cloned voice, VoiceProfile, EnginePayload, generated speech, document, user database or internal test sample is included in the public source or release assets.

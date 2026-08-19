@@ -10,6 +10,7 @@ from PySide6.QtWidgets import QApplication, QMessageBox
 
 from sectvoice.core.asr import ASRService
 from sectvoice.core.audio_buffer import StreamingAudioBuffer
+from sectvoice.core.builtin_voices import seed_builtin_voices
 from sectvoice.core.cache import VoiceCache
 from sectvoice.core.database import Database
 from sectvoice.core.diagnostics import run_startup_diagnostics
@@ -48,6 +49,7 @@ def build_services(paths: AppPaths) -> MainWindowServices:
     cache = VoiceCache(database, paths.cache / "audio")
     compiler = VoiceCompiler(voices, media, paths.data / "voices")
     voice_packages = VoicePackageService(voices, paths.data / "voices")
+    seed_builtin_voices(voices, voice_packages, settings)
     portable_python = paths.runtime / "common" / "python310" / "python.exe"
     asr_runtime = paths.runtime / "asr" / "faster-whisper" / "1.2.1"
     asr = ASRService(

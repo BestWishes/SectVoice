@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "sectvoice-reader"
-version = "0.3.2"
+version = "0.3.3"
 description = "Windows local continuous text reader with installable voice engine packages"
 readme = "README.md"
 requires-python = ">=3.10,<3.13"
@@ -48,6 +48,9 @@ Issues = "https://github.com/BestWishes/SectVoice/issues"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/sectvoice"]
+
+[tool.hatch.build.targets.wheel.force-include]
+"src/sectvoice/assets" = "sectvoice/assets"
 
 [tool.pytest.ini_options]
 addopts = "-ra --strict-markers"

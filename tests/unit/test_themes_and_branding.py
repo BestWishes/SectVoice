@@ -58,6 +58,7 @@ def test_distribution_builds_use_the_same_windows_icon() -> None:
 
     assert 'icon=str(icon_path)' in spec
     assert '"sectvoice/assets"' in spec
+    assert '"sectvoice/assets/builtin_voices"' in spec
     assert "SetupIconFile=..\\src\\sectvoice\\assets\\VoiceIcon.ico" in installer
     assert "UninstallDisplayIcon={app}\\app\\SectVoiceReader.exe" in installer
 

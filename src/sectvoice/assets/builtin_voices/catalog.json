@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "source_repository": "https://github.com/OpenMOSS/MOSS-TTS-Nano",
+  "source_revision": "cc7bdf19c7639c0870dab22045a33b442760f6be",
+  "source_license": "Apache-2.0",
+  "voices": [
+    {
+      "voice_id": "69d643d7-a669-4fac-a3ef-5f483ecc2a0e",
+      "name": "体验女声",
+      "package": "experience-female.voicepkg",
+      "sha256": "92ed456b4c29f56c4bb41d9fef8e1f3f9c457d01b8685c3c25cd39b58b888e10",
+      "source_file": "assets/audio/zh_4.wav",
+      "source_sha256": "360724ce411ddc94e866fe98ee3161349836bba16037ed7f209a1e807f4fd7fd"
+    },
+    {
+      "voice_id": "a6467091-ad09-47eb-ab5d-92fc991e3e61",
+      "name": "体验男声",
+      "package": "experience-male.voicepkg",
+      "sha256": "cf6ae91f2f321002b0a36df93a1ce7a60f6e74933ed1b7c9febc2a69bdfbe601",
+      "source_file": "assets/audio/zh_3.wav",
+      "source_sha256": "406d80c599da92573719c7236fd4a93a49c9a8c5c51872118a6444558249d70d"
+    }
+  ]
+}

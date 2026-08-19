@@ -35,6 +35,7 @@ Reader 必须像普通阅读软件，而不是输入文字后等待完整 WAV �
 - 同一 VoiceId 可以拥有 Basic 和 Standard Payload；不得创建“基础老掌柜”和“中级老掌柜”两个身份。
 - 缺少当前 Tier Payload 时明确提示并允许立即或批量编译，禁止静默重新分析全部声音。
 - 支持新建、重命名、删除、试听、重新编译、状态查看、可靠备份及 `.voicepkg` 导入/导出。
+- Reader Core 提供两个来源、许可证、VoiceId和哈希均固定的体验声音。首次启动只导入一次；已有同VoiceId档案不覆盖，用户删除后不得在后续启动中强制恢复。
 
 ## 4. VoicePackage
 

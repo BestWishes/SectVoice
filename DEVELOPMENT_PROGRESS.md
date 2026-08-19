@@ -4,9 +4,23 @@ Last updated: 2026-08-19
 
 ## Current release line
 
-- Stable public source and downloadable release: v0.3.2.
-- v0.3.2 fixes persistent button highlighting and a long-reading extreme-short-unit boundary failure; Basic and Standard model assets remain the existing immutable downloads and are not uploaded again.
+- Stable public source and downloadable release: v0.3.3.
+- v0.3.3 ships two attributed, hash-pinned OpenMOSS-derived experience voices and imports them once for a fresh data root.
+- Basic and Standard model assets remain the existing immutable downloads and are not uploaded again.
 - Reader, Basic, Standard, reusable voice profiles, continuous windows, multi-role reading, rapid seek, cache reuse, package management and in-app updates are implemented.
+
+## v0.3.3 work
+
+- Identified Experience Female and Experience Male as exact copies of OpenMOSS/MOSS-TTS-Nano `zh_4.wav` and `zh_3.wav` at pinned revision `cc7bdf19c7639c0870dab22045a33b442760f6be`; both source SHA-256 values match upstream.
+- Exported clean VoicePackages containing ready Basic and Standard payloads, totalling about 5.4 MB compressed, with no absolute developer path in any text member.
+- Added one-time per-VoiceId seeding: fresh roots import both, upgrades preserve an existing same-ID profile, and a deleted built-in voice stays deleted.
+- Extended source/frozen packaging, provenance notices and release auditing so only exact catalogued built-in VoicePackages are allowed; all other voice or user-data files remain release blockers.
+- Full regression status: 182 passed.
+- Fresh-root real-engine validation passed for Experience Female and Experience Male on
+  both Basic `cc7bdf19` and Standard `d523079f-sv3`; all four imported payloads were
+  relocated under the clean user root and produced non-empty audible WAV output.
+- Frozen Reader cold-start validation imported exactly two built-ins and four ready payloads;
+  the v0.3.3 Core, installer, checksums and privacy audit completed successfully.
 
 ## v0.3.2 release
 
