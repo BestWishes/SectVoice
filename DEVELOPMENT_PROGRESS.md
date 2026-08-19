@@ -10,6 +10,7 @@ Last updated: 2026-08-19
 
 ## v0.3.2 release
 
+- Replaced the public interface preview set with four v0.3.2 screenshots in filename order: Warm Paper Reader, Night Reading Reader, voice creation and engine/package management.
 - Removed the persistent primary-button marker from Play, Create Voice, Install Basic and Install Standard so these controls use the same ordinary button appearance as their neighbors; transient hover, press, disabled and list-selection feedback remain intact.
 - Confirmed the long-reading failure `GenerationWindow produced an empty SpeechUnit range` was a Reader boundary-mapping defect: an ASR timestamp for an extreme-short final unit could clamp to the end of the generated PCM and leave that unit with zero frames.
 - Window layouts now reject zero-frame SpeechUnits before caching or playback. A rejected multi-unit window automatically retries and then splits only at complete SpeechUnit boundaries, so no source text is silently skipped.
