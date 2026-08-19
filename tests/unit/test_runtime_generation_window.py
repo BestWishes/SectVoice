@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import replace
+import json
 from pathlib import Path
 import shutil
 from threading import Event
@@ -76,6 +77,21 @@ class _EmptyAlignmentASR:
 
     def transcribe(self, *_args, **_kwargs):
         raise ASRError("所选片段没有识别到清晰人声，请重新选择")
+
+
+class _EndClampedAlignmentASR:
+    """Returns complete text whose final short unit starts at the PCM edge."""
+
+    is_available = True
+
+    def transcribe(self, *_args, **_kwargs):
+        return SimpleNamespace(
+            text="呵咦",
+            words=(
+                {"text": "呵", "start": 0.0, "end": 3.03},
+                {"text": "咦", "start": 3.03, "end": 3.30},
+            ),
+        )
 
 
 class _Client:
@@ -614,3 +630,62 @@ def test_empty_alignment_asr_result_never_escapes_as_reference_audio_error(
         if chunk.is_final:
             final_ids.append(chunk.speech_unit_id)
     assert final_ids == [unit.unit.speech_unit_id for unit in units]
+
+
+def test_end_clamped_short_unit_is_split_and_read_instead_of_failing(
+    tmp_path: Path,
+) -> None:
+    pcm, data = _continuous_three_unit_pcm()
+    client = _Client(data, pcm)
+    handle = _Handle(client)
+    handle.manifest.raw["capabilities"]["window_boundary_timing"] = "asr"
+    runtime, buffer = _runtime(
+        tmp_path,
+        handle,
+        _Media(),
+        alignment_asr=_EndClampedAlignmentASR(),
+    )
+    units = _resolved_units(("呵——。", "咦？"))
+
+    _run(runtime, units, SynthesisSettings())
+
+    assert len(client.calls) == 4
+    final_ids = []
+    while (chunk := buffer.pop()) is not None:
+        if chunk.is_final:
+            final_ids.append(chunk.speech_unit_id)
+    assert final_ids == [unit.unit.speech_unit_id for unit in units]
+
+
+def test_invalid_cached_empty_range_is_discarded_and_regenerated(
+    tmp_path: Path,
+) -> None:
+    pcm, data = _continuous_three_unit_pcm()
+    client = _Client(data, pcm)
+    runtime, _buffer = _runtime(tmp_path, _Handle(client), _Media())
+    units = _resolved_units(("第一句。", "第二句。", "第三句。"))
+
+    _run(runtime, units, SynthesisSettings())
+    with runtime.cache.database.connect() as connection:
+        row = connection.execute(
+            "SELECT cache_key, metadata_json FROM cache_index"
+        ).fetchone()
+        metadata = json.loads(row["metadata_json"])
+        final_range = metadata["window_layout"]["unit_ranges"][-1]
+        final_range["start_frame"] = final_range["end_frame"]
+        connection.execute(
+            "UPDATE cache_index SET metadata_json=? WHERE cache_key=?",
+            (json.dumps(metadata), row["cache_key"]),
+        )
+
+    _run(runtime, units, SynthesisSettings())
+
+    assert len(client.calls) == 2
+    with runtime.cache.database.connect() as connection:
+        refreshed = json.loads(
+            connection.execute(
+                "SELECT metadata_json FROM cache_index"
+            ).fetchone()["metadata_json"]
+        )
+    final_range = refreshed["window_layout"]["unit_ranges"][-1]
+    assert final_range["end_frame"] > final_range["start_frame"]

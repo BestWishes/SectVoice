@@ -82,6 +82,8 @@ def test_main_window_theme_selection_is_applied_and_persisted(
     window = MainWindow(services, theme_manager=manager)
     qtbot.addWidget(window)
 
+    assert window.play_button.property("kind") is None
+
     window.theme_combo.setCurrentIndex(
         window.theme_combo.findData("quiet_sage")
     )

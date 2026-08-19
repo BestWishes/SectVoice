@@ -4,9 +4,21 @@ Last updated: 2026-08-19
 
 ## Current release line
 
-- Stable public source and downloadable release: v0.3.1.
-- v0.3.1 adds unified Windows branding and persistent Reader themes; Basic and Standard model assets remain the existing immutable downloads and were not uploaded again.
+- Stable public source and downloadable release: v0.3.2.
+- v0.3.2 fixes persistent button highlighting and a long-reading extreme-short-unit boundary failure; Basic and Standard model assets remain the existing immutable downloads and are not uploaded again.
 - Reader, Basic, Standard, reusable voice profiles, continuous windows, multi-role reading, rapid seek, cache reuse, package management and in-app updates are implemented.
+
+## v0.3.2 release
+
+- Removed the persistent primary-button marker from Play, Create Voice, Install Basic and Install Standard so these controls use the same ordinary button appearance as their neighbors; transient hover, press, disabled and list-selection feedback remain intact.
+- Confirmed the long-reading failure `GenerationWindow produced an empty SpeechUnit range` was a Reader boundary-mapping defect: an ASR timestamp for an extreme-short final unit could clamp to the end of the generated PCM and leave that unit with zero frames.
+- Window layouts now reject zero-frame SpeechUnits before caching or playback. A rejected multi-unit window automatically retries and then splits only at complete SpeechUnit boundaries, so no source text is silently skipped.
+- Whole-window speed scaling and proportional fallback reserve at least one PCM frame for every SpeechUnit, preventing rounding from reintroducing an empty range.
+- Old cache entries containing an invalid empty range are discarded and regenerated automatically instead of stopping playback.
+- Unexpected generation failures now write their traceback with session and generation identifiers to the Reader log before the user-facing error callback.
+- Regression status for the v0.3.2 source checkout: 175 passed.
+- PyInstaller Reader/Package executables, the 658,077,355-byte Core ZIP and the 575,899,750-byte installer were rebuilt from the reviewed v0.3.2 source; the frozen package CLI and hidden Reader startup smoke checks passed.
+- All 10 local v0.3.2 release assets match `SHA256SUMS.txt`; every Basic/Standard catalog asset remains an immutable remote reference, so no model archive is duplicated in this Reader-only release.
 
 ## v0.3.1 release
 
@@ -38,6 +50,7 @@ Last updated: 2026-08-19
 
 | Reference | Purpose |
 |---|---|
+| `v0.3.2` | Persistent-button and empty-SpeechUnit boundary recovery release; reuses unchanged engine packages |
 | `v0.3.1` | Reader theme and Windows branding release; reuses the unchanged v0.3.0 engine packages |
 | `v0.3.0` | Public open-source/release baseline before theme and branding work |
 | `v0.2.5` | Stable release with Standard GPU pacing |
@@ -52,7 +65,7 @@ Last updated: 2026-08-19
 - Release privacy audit and SHA-256 manifest pass.
 - The frozen Reader and package CLI start successfully from the finalized Core tree.
 - A true Inno install cannot finish inside the current managed sandbox because registry and Start Menu writes are denied; the same installer must receive one final clean-machine install check after remote publication.
-- The v0.3.1 Reader release reuses the unchanged v0.3.0 Basic and Standard assets instead of uploading several gigabytes of model data again.
+- The v0.3.2 Reader release reuses the unchanged v0.3.0 Basic and Standard assets instead of uploading several gigabytes of model data again.
 
 ## Known boundaries
 

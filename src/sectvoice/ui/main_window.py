@@ -314,7 +314,6 @@ class MainWindow(QMainWindow):
         controls.setSpacing(8)
         self.previous_button = QPushButton("上一句")
         self.play_button = QPushButton("播放")
-        self.play_button.setProperty("kind", "primary")
         self.pause_button = QPushButton("暂停")
         self.stop_button = QPushButton("停止")
         self.next_button = QPushButton("下一句")

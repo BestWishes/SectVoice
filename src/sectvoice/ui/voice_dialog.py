@@ -179,7 +179,6 @@ class VoiceCreationDialog(QDialog):
         self.play_selection = QPushButton("试听所选原音")
         self.asr_button = QPushButton("处理片段并自动转写")
         self.create_button = QPushButton("创建声音并生成测试语音")
-        self.create_button.setProperty("kind", "primary")
         self.play_result = QPushButton("试听克隆测试语音")
         self.play_result.setEnabled(False)
         for button in (self.play_selection, self.asr_button, self.create_button, self.play_result):

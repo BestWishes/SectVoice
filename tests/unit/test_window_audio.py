@@ -252,6 +252,36 @@ def test_layout_scales_once_with_whole_window_time_stretch(tmp_path: Path) -> No
     assert scaled.unit_ranges[-1].end_frame == 4_000
 
 
+def test_window_layout_rejects_an_empty_speech_unit_range() -> None:
+    with pytest.raises(ValueError, match="must contain audible frames"):
+        WindowAudioLayout(
+            100,
+            (
+                UnitFrameRange(0, 0, 100),
+                UnitFrameRange(1, 100, 100),
+            ),
+            ("first", "second"),
+        )
+
+
+def test_time_stretch_scaling_keeps_every_short_range_non_empty() -> None:
+    layout = WindowAudioLayout(
+        100,
+        (
+            UnitFrameRange(0, 0, 1),
+            UnitFrameRange(1, 1, 2),
+            UnitFrameRange(2, 2, 100),
+        ),
+        ("first", "second", "third"),
+    )
+
+    scaled = scale_window_layout(layout, new_total_frames=3)
+
+    assert [
+        (item.start_frame, item.end_frame) for item in scaled.unit_ranges
+    ] == [(0, 1), (1, 2), (2, 3)]
+
+
 def test_window_edge_conditioning_adds_one_small_outer_guard_only(tmp_path: Path) -> None:
     path = tmp_path / "edges.pcm"
     np.full(1_000, 0.2, dtype="<f4").tofile(path)

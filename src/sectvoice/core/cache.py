@@ -243,6 +243,22 @@ class VoiceCache:
             last_accessed_at=now,
         )
 
+    def remove(self, cache_key: str) -> int:
+        """Removes one unusable cache entry and its dependent unit index."""
+
+        with self.database.connect() as connection:
+            row = connection.execute(
+                "SELECT audio_path, byte_size FROM cache_index WHERE cache_key=?",
+                (cache_key,),
+            ).fetchone()
+            if row is None:
+                return 0
+            connection.execute(
+                "DELETE FROM cache_index WHERE cache_key=?", (cache_key,)
+            )
+        Path(row["audio_path"]).unlink(missing_ok=True)
+        return int(row["byte_size"])
+
     def find_window_units(
         self, *, signature_key: str, unit_text_sha256: str
     ) -> tuple[WindowUnitCacheHit, ...]:

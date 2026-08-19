@@ -1,6 +1,6 @@
-SectVoice Reader 0.3.0 open-source release
+SectVoice Reader 0.3.2 open-source release
 
-1. Run SectVoice-Setup-0.3.0-x64.exe and choose an installation directory.
+1. Run SectVoice-Setup-0.3.2-x64.exe and choose an installation directory.
 2. Reader Core is required. Basic (CPU) and Standard (NVIDIA GPU/CUDA) are
    optional and can also be installed later from the Reader package manager.
 3. The installer never includes a cloned voice. Create a voice from a reference

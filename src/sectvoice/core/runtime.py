@@ -230,6 +230,11 @@ class VoiceRuntime:
             return
         except Exception as exc:
             if self.gate.current() == token:
+                LOGGER.exception(
+                    "voice_runtime_generation_failed session_id=%s generation_id=%s",
+                    token.session_id,
+                    token.generation_id,
+                )
                 callbacks.error(str(exc))
 
     def _produce_window_resilient(
@@ -384,29 +389,38 @@ class VoiceRuntime:
         )
         entry = self.cache.get(identity.key)
         if entry is not None:
-            self.cache.index_window(identity, entry.metadata)
-            if document_id is not None:
-                self.cache.note_document_use(document_id, identity.key)
-            pcm = PCMFormat(
-                sample_rate=int(entry.metadata["sample_rate"]),
-                channels=int(entry.metadata["channels"]),
-                sample_format=str(entry.metadata["sample_format"]),
-            )
-            layout = WindowAudioLayout.from_metadata(
-                dict(entry.metadata["window_layout"]),
-                expected_texts=tuple(item.unit.text for item in window.units),
-            )
-            self._emit_window_with_optional_speed(
-                token,
-                window,
-                pcm,
-                entry.audio_path,
-                layout,
-                settings,
-                native_speed=native_speed,
-                cancel_event=cancel_event,
-            )
-            return
+            try:
+                pcm = PCMFormat(
+                    sample_rate=int(entry.metadata["sample_rate"]),
+                    channels=int(entry.metadata["channels"]),
+                    sample_format=str(entry.metadata["sample_format"]),
+                )
+                layout = WindowAudioLayout.from_metadata(
+                    dict(entry.metadata["window_layout"]),
+                    expected_texts=tuple(item.unit.text for item in window.units),
+                )
+            except (KeyError, TypeError, ValueError) as exc:
+                LOGGER.warning(
+                    "discarding_invalid_window_cache cache_key=%s reason=%s",
+                    entry.cache_key,
+                    exc,
+                )
+                self.cache.remove(entry.cache_key)
+            else:
+                self.cache.index_window(identity, entry.metadata)
+                if document_id is not None:
+                    self.cache.note_document_use(document_id, identity.key)
+                self._emit_window_with_optional_speed(
+                    token,
+                    window,
+                    pcm,
+                    entry.audio_path,
+                    layout,
+                    settings,
+                    native_speed=native_speed,
+                    cancel_event=cancel_event,
+                )
+                return
 
         self.temp_root.mkdir(parents=True, exist_ok=True)
         if not handle.is_loaded:
@@ -535,16 +549,24 @@ class VoiceRuntime:
                         recognized_text=alignment.text,
                     ) from exc
             else:
-                layout = locate_window_unit_frames(
-                    normalized_path,
-                    pcm_format,
-                    unit_texts,
-                    timing_mode=(
-                        boundary_timing
-                        if boundary_timing in {"voiced", "hybrid"}
-                        else "voiced"
-                    ),
-                )
+                try:
+                    layout = locate_window_unit_frames(
+                        normalized_path,
+                        pcm_format,
+                        unit_texts,
+                        timing_mode=(
+                            boundary_timing
+                            if boundary_timing in {"voiced", "hybrid"}
+                            else "voiced"
+                        ),
+                    )
+                except ValueError as exc:
+                    if len(window.units) <= 1:
+                        raise
+                    raise GeneratedAudioValidationError(
+                        "连续片段无法为每个朗读单元建立可靠音频边界；"
+                        "已进入自动重试和完整朗读单元降级"
+                    ) from exc
             level_balance = balance_window_unit_levels_pcm(
                 normalized_path,
                 pcm_format,
@@ -696,6 +718,7 @@ class VoiceRuntime:
             unit_text_sha256=fingerprint,
         )
         best: tuple[int, object, WindowAudioLayout] | None = None
+        invalid_cache_keys: set[str] = set()
         for hit in hits:
             metadata = hit.entry.metadata
             try:
@@ -706,7 +729,15 @@ class VoiceRuntime:
                         for item in metadata["window_layout"]["unit_text_sha256"]
                     ),
                 )
-            except (KeyError, TypeError, ValueError):
+            except (KeyError, TypeError, ValueError) as exc:
+                if hit.entry.cache_key not in invalid_cache_keys:
+                    invalid_cache_keys.add(hit.entry.cache_key)
+                    LOGGER.warning(
+                        "discarding_invalid_window_cache cache_key=%s reason=%s",
+                        hit.entry.cache_key,
+                        exc,
+                    )
+                    self.cache.remove(hit.entry.cache_key)
                 continue
             matched = 0
             stored_index = hit.unit_index

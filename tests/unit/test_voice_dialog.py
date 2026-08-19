@@ -28,6 +28,8 @@ def test_completed_background_task_restores_voice_dialog_controls(qtbot) -> None
     )
     qtbot.addWidget(dialog)
 
+    assert dialog.create_button.property("kind") is None
+
     dialog._start_task(lambda: "done", lambda _result: None, "正在测试后台任务")
 
     assert not dialog.select_button.isEnabled()

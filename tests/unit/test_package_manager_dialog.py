@@ -43,6 +43,9 @@ def test_activation_is_only_available_for_inactive_package_in_same_tier(
     )
     qtbot.addWidget(dialog)
 
+    assert dialog.install_basic_button.property("kind") is None
+    assert dialog.install_standard_button.property("kind") is None
+
     dialog.table.selectRow(0)
     assert dialog.activate_button.text() == "所选包已启用"
     assert not dialog.activate_button.isEnabled()
