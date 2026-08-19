@@ -5,11 +5,16 @@ from PyInstaller.utils.hooks import collect_data_files
 
 source_root = Path(SPECPATH).parent
 opencc_datas = collect_data_files("opencc")
+icon_path = source_root / "src" / "sectvoice" / "assets" / "VoiceIcon.ico"
+branding_datas = [
+    (str(icon_path), "sectvoice/assets"),
+    (str(icon_path.with_suffix(".png")), "sectvoice/assets"),
+]
 reader_analysis = Analysis(
     [str(source_root / "src" / "sectvoice" / "__main__.py")],
     pathex=[str(source_root / "src")],
     binaries=[],
-    datas=opencc_datas,
+    datas=opencc_datas + branding_datas,
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
@@ -31,6 +36,7 @@ reader_exe = EXE(
     upx=False,
     console=False,
     disable_windowed_traceback=False,
+    icon=str(icon_path),
 )
 
 package_analysis = Analysis(
@@ -59,6 +65,7 @@ package_exe = EXE(
     upx=False,
     console=True,
     disable_windowed_traceback=False,
+    icon=str(icon_path),
 )
 
 collect = COLLECT(

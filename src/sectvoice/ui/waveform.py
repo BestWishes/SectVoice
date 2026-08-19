@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import numpy as np
 from PySide6.QtCore import QPointF, QRectF, Qt, Signal
-from PySide6.QtGui import QColor, QMouseEvent, QPainter, QPen
+from PySide6.QtGui import QMouseEvent, QPainter, QPalette, QPen
 from PySide6.QtWidgets import QWidget
 
 
@@ -34,7 +34,8 @@ class WaveformWidget(QWidget):
 
     def paintEvent(self, _event) -> None:
         painter = QPainter(self)
-        painter.fillRect(self.rect(), QColor("#edf3f8"))
+        palette = self.palette()
+        painter.fillRect(self.rect(), palette.color(QPalette.ColorRole.Base))
         if self._waveform.size:
             width = max(1, self.width())
             center = self.height() / 2
@@ -42,7 +43,7 @@ class WaveformWidget(QWidget):
             if values.size > width:
                 indices = np.linspace(0, values.size - 1, width).astype(int)
                 values = values[indices]
-            painter.setPen(QPen(QColor("#277cb7"), 1))
+            painter.setPen(QPen(palette.color(QPalette.ColorRole.Link), 1))
             scale = self.height() * 0.46 / max(0.001, float(values.max()))
             for x, value in enumerate(values):
                 xx = x * width / max(1, values.size - 1)
@@ -51,13 +52,13 @@ class WaveformWidget(QWidget):
         if self._duration:
             left = self._start / self._duration * self.width()
             right = self._end / self._duration * self.width()
+            mask = palette.color(QPalette.ColorRole.WindowText)
+            mask.setAlpha(52)
+            painter.fillRect(QRectF(0, 0, left, self.height()), mask)
             painter.fillRect(
-                QRectF(0, 0, left, self.height()), QColor(40, 50, 60, 70)
+                QRectF(right, 0, self.width() - right, self.height()), mask
             )
-            painter.fillRect(
-                QRectF(right, 0, self.width() - right, self.height()), QColor(40, 50, 60, 70)
-            )
-            painter.setPen(QPen(QColor("#e67e22"), 2))
+            painter.setPen(QPen(palette.color(QPalette.ColorRole.Link), 2))
             painter.drawLine(QPointF(left, 0), QPointF(left, self.height()))
             painter.drawLine(QPointF(right, 0), QPointF(right, self.height()))
 

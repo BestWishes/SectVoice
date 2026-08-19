@@ -75,6 +75,8 @@ class PackageManagerDialog(QDialog):
         self.refresh_catalog_button = QPushButton("刷新可下载包")
         self.install_basic_button = QPushButton("下载安装基础包")
         self.install_standard_button = QPushButton("下载安装中级包")
+        self.install_basic_button.setProperty("kind", "primary")
+        self.install_standard_button.setProperty("kind", "primary")
         self.install_basic_button.setEnabled(False)
         self.install_standard_button.setEnabled(False)
         online.addWidget(self.refresh_catalog_button)
@@ -85,6 +87,7 @@ class PackageManagerDialog(QDialog):
         self.download_status = QLabel(
             "不会自动联网；点击“检查模型包更新”后才读取公开目录。高级包尚未发布。"
         )
+        self.download_status.setObjectName("subtleText")
         self.download_status.setWordWrap(True)
         layout.addWidget(self.download_status)
         self.download_progress = QProgressBar()

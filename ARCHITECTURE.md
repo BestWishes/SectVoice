@@ -14,6 +14,8 @@ VoiceCore禁止调用Reader UI。引擎包禁止直接操作Reader文档、字�
 
 - Document、SpeechUnit映射和编辑保存。
 - ReaderUI、ReaderController、高亮和自动滚动。
+- ThemeManager统一管理QPalette、全局样式和主题持久化；业务窗口不维护私有配色，主题不得进入VoiceCore。
+- Branding在QApplication创建时统一设置Windows AppUserModelID和应用图标，发行配置复用同一多尺寸ICO。
 - Windows音频输出适配器。
 - `SpeechUnitId -> [start_char,end_char)` 映射。
 

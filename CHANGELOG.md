@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- Added a unified SectVoice Windows icon for the taskbar, frozen executable, installer, shortcuts and uninstaller.
+- Added four persistent Reader themes: Warm Paper, Soft Cream, Quiet Sage and Night Reading.
+- Reworked the main window and shared Qt controls with warmer panels, reading surfaces, rounded controls and consistent dialog styling without changing voice or playback behavior.
+
 ## 0.3.0 - 2026-08-18
 
 - Open-sourced SectVoice-owned code under Apache License 2.0.

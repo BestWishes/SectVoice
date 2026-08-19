@@ -1,12 +1,25 @@
 # SectVoice development status
 
-Last updated: 2026-08-18
+Last updated: 2026-08-19
 
 ## Current release line
 
-- Stable downloadable release: v0.2.5.
-- Locally finalized open-source release: v0.3.0; remote publication is pending GitHub access.
+- Stable public source and downloadable release: v0.3.0.
+- Current local unreleased work: unified Windows branding and persistent Reader themes.
 - Reader, Basic, Standard, reusable voice profiles, continuous windows, multi-role reading, rapid seek, cache reuse, package management and in-app updates are implemented.
+
+## Current unreleased changes
+
+- Uses the supplied blue book/speaker artwork as one normalized multi-resolution Windows ICO (16 through 256 px) and a 512 px source PNG.
+- Applies a stable Windows AppUserModelID and the same icon to QApplication/windows, Reader and package-helper EXEs, installer, shortcuts and uninstall entry.
+- Adds a UI-only `ThemeManager` with semantic palette tokens; VoiceCore, engine requests, audio cache identity and playback behavior are unchanged.
+- Adds four immediate, SQLite-persisted themes: Warm Paper (default), Soft Cream, Quiet Sage and Night Reading.
+- Restyles the main three-panel layout, reading surface, playback bar, lists, tables, forms, buttons, scrollbars, progress/status elements and inherited dialogs.
+- Adds automated theme/catalog/persistence/icon/package-wiring coverage and actual offscreen visual captures for the warm and night themes.
+- PyInstaller one-folder build completed successfully; the embedded EXE icon plus bundled runtime ICO were inspected, and the frozen Reader stayed alive through a startup smoke check.
+- Inno Setup 6.7.3 successfully compiled the final installer script against a minimal Core fixture, and the resulting installer icon was extracted and visually checked.
+- Corrects one legacy test that assumed every source checkout folder must literally be named `source`; it now verifies both the installed `source` layout and arbitrarily named public clones without changing runtime path behavior.
+- Regression status in the public checkout: 171 passed.
 
 ## v0.3.0 changes
 
@@ -24,6 +37,7 @@ Last updated: 2026-08-18
 
 | Reference | Purpose |
 |---|---|
+| `v0.3.0` | Current public open-source/release baseline before theme and branding work |
 | `v0.2.5` | Stable release with Standard GPU pacing |
 | `v0.2.4-stable-baseline` | Stable state before GPU pacing work |
 | `v15-stable-baseline` | Stable state before Windows distribution work |
@@ -36,7 +50,7 @@ Last updated: 2026-08-18
 - Release privacy audit and SHA-256 manifest pass.
 - The frozen Reader and package CLI start successfully from the finalized Core tree.
 - A true Inno install cannot finish inside the current managed sandbox because registry and Start Menu writes are denied; the same installer must receive one final clean-machine install check after remote publication.
-- Public repository and Release publication remain incomplete until remote GitHub writes succeed.
+- The theme/branding work is committed locally but intentionally not published as a new release yet.
 
 ## Known boundaries
 

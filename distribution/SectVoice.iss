@@ -48,6 +48,8 @@ UninstallDisplayName=SectVoice Reader
 LicenseFile=..\LICENSE
 InfoBeforeFile=README-INSTALL.txt
 SetupLogging=yes
+SetupIconFile=..\src\sectvoice\assets\VoiceIcon.ico
+UninstallDisplayIcon={app}\app\SectVoiceReader.exe
 
 [Languages]
 Name: "chinesesimp"; MessagesFile: "languages\ChineseSimplified.isl"

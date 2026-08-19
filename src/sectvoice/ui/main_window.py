@@ -62,10 +62,11 @@ from sectvoice.paths import AppPaths
 from sectvoice.reader.documents import Document, DocumentRepository
 from sectvoice.reader.playback_controller import PlaybackController
 from sectvoice.reader.roles import RoleRepository, suggest_dialogue_roles
-from sectvoice.ui.text_editor import ReaderTextEdit
-from sectvoice.ui.voice_dialog import VoiceCreationDialog
-from sectvoice.ui.tasks import BackgroundTask
 from sectvoice.ui.package_manager_dialog import PackageManagerDialog
+from sectvoice.ui.tasks import BackgroundTask
+from sectvoice.ui.text_editor import ReaderTextEdit
+from sectvoice.ui.themes import DEFAULT_THEME_ID, ThemeManager, available_themes
+from sectvoice.ui.voice_dialog import VoiceCreationDialog
 from sectvoice import __version__
 
 
@@ -95,9 +96,20 @@ class DocumentSaveSnapshot:
 
 
 class MainWindow(QMainWindow):
-    def __init__(self, services: MainWindowServices) -> None:
+    def __init__(
+        self,
+        services: MainWindowServices,
+        *,
+        theme_manager: ThemeManager | None = None,
+    ) -> None:
         super().__init__()
         self.services = services
+        self.theme_manager = theme_manager or ThemeManager()
+        if theme_manager is None:
+            active_theme = self.theme_manager.apply(
+                str(services.settings.get("theme_id", DEFAULT_THEME_ID))
+            )
+            services.settings.set("theme_id", active_theme.theme_id)
         self.current_document: Document | None = None
         self._loading_text = False
         self._dirty = False
@@ -124,15 +136,21 @@ class MainWindow(QMainWindow):
 
     def _build_ui(self) -> None:
         root = QWidget()
+        root.setObjectName("appRoot")
         root_layout = QVBoxLayout(root)
-        root_layout.setContentsMargins(8, 8, 8, 6)
+        root_layout.setContentsMargins(12, 12, 12, 7)
+        root_layout.setSpacing(10)
         self.splitter = QSplitter(Qt.Orientation.Horizontal)
         root_layout.addWidget(self.splitter, 1)
 
         left = QWidget()
+        left.setObjectName("sidePanel")
         left_layout = QVBoxLayout(left)
-        left_layout.setContentsMargins(0, 0, 6, 0)
-        left_layout.addWidget(QLabel("文档"))
+        left_layout.setContentsMargins(12, 12, 12, 12)
+        left_layout.setSpacing(8)
+        document_section_title = QLabel("文档")
+        document_section_title.setObjectName("sectionTitle")
+        left_layout.addWidget(document_section_title)
         self.document_list = QListWidget()
         self.document_list.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
         left_layout.addWidget(self.document_list, 2)
@@ -145,16 +163,20 @@ class MainWindow(QMainWindow):
         document_manage_buttons = QHBoxLayout()
         self.rename_document_button = QPushButton("修改名称")
         self.delete_document_button = QPushButton("删除")
+        self.delete_document_button.setProperty("kind", "danger")
         document_manage_buttons.addWidget(self.rename_document_button)
         document_manage_buttons.addWidget(self.delete_document_button)
         left_layout.addLayout(document_manage_buttons)
-        left_layout.addWidget(QLabel("声音档案"))
+        voice_section_title = QLabel("声音档案")
+        voice_section_title.setObjectName("sectionTitle")
+        left_layout.addWidget(voice_section_title)
         self.voice_list = QListWidget()
         left_layout.addWidget(self.voice_list, 2)
         voice_buttons_1 = QHBoxLayout()
         self.new_voice_button = QPushButton("新建声音")
         self.rename_voice_button = QPushButton("改名")
         self.delete_voice_button = QPushButton("删除")
+        self.delete_voice_button.setProperty("kind", "danger")
         for button in (self.new_voice_button, self.rename_voice_button, self.delete_voice_button):
             voice_buttons_1.addWidget(button)
         left_layout.addLayout(voice_buttons_1)
@@ -178,11 +200,13 @@ class MainWindow(QMainWindow):
         self.splitter.addWidget(left)
 
         center = QWidget()
+        center.setObjectName("readerPanel")
         center_layout = QVBoxLayout(center)
-        center_layout.setContentsMargins(6, 0, 6, 0)
+        center_layout.setContentsMargins(14, 12, 14, 14)
+        center_layout.setSpacing(10)
         center_header = QHBoxLayout()
         self.document_title = QLabel("未打开文档")
-        self.document_title.setStyleSheet("font-size: 16px; font-weight: 600;")
+        self.document_title.setObjectName("documentTitle")
         self.font_down = QToolButton()
         self.font_down.setText("A−")
         self.font_up = QToolButton()
@@ -197,15 +221,25 @@ class MainWindow(QMainWindow):
         center_header.addWidget(self.line_spacing)
         center_layout.addLayout(center_header)
         self.editor = ReaderTextEdit()
+        self.editor.setObjectName("readerText")
         self.editor.setPlaceholderText("在此粘贴文字，或从左侧导入 UTF-8 TXT。双击任意字符即可跳转朗读。")
         self.editor.setLineWrapMode(ReaderTextEdit.LineWrapMode.WidgetWidth)
         center_layout.addWidget(self.editor, 1)
         self.splitter.addWidget(center)
 
         right = QWidget()
+        right.setObjectName("settingsPanel")
         right_layout = QVBoxLayout(right)
-        right_layout.setContentsMargins(6, 0, 0, 0)
+        right_layout.setContentsMargins(12, 12, 12, 12)
+        right_layout.setSpacing(8)
         form = QFormLayout()
+        form.setHorizontalSpacing(10)
+        form.setVerticalSpacing(8)
+        self.theme_combo = QComboBox()
+        for theme in available_themes():
+            self.theme_combo.addItem(theme.display_name, theme.theme_id)
+        theme_index = self.theme_combo.findData(self.theme_manager.current_theme_id)
+        self.theme_combo.setCurrentIndex(max(0, theme_index))
         self.tier_combo = QComboBox()
         self.tier_combo.addItem("基础（CPU轻量）", Tier.BASIC.value)
         self.tier_combo.addItem("中级（GPU高质量）", Tier.STANDARD.value)
@@ -228,6 +262,7 @@ class MainWindow(QMainWindow):
         self.paragraph_pause = QSpinBox()
         self.paragraph_pause.setRange(0, 5000)
         self.paragraph_pause.setValue(280)
+        form.addRow("界面主题", self.theme_combo)
         form.addRow("语音档次", self.tier_combo)
         form.addRow("当前声音", self.voice_combo)
         form.addRow("语速", self.speed_spin)
@@ -237,7 +272,9 @@ class MainWindow(QMainWindow):
         form.addRow("段落停顿(ms)", self.paragraph_pause)
         right_layout.addLayout(form)
 
-        right_layout.addWidget(QLabel("角色声音（按SpeechUnit分配）"))
+        role_section_title = QLabel("角色声音（按SpeechUnit分配）")
+        role_section_title.setObjectName("sectionTitle")
+        right_layout.addWidget(role_section_title)
         self.role_list = QListWidget()
         right_layout.addWidget(self.role_list, 1)
         role_buttons = QVBoxLayout()
@@ -257,7 +294,9 @@ class MainWindow(QMainWindow):
         self.package_manager_button = QPushButton("管理语音引擎/模型包")
         self.reader_update_button = QPushButton(f"检查Reader更新（当前 {__version__}）")
         right_layout.addWidget(self.cache_label)
-        right_layout.addWidget(QLabel("最大缓存空间"))
+        cache_limit_label = QLabel("最大缓存空间")
+        cache_limit_label.setObjectName("subtleText")
+        right_layout.addWidget(cache_limit_label)
         right_layout.addWidget(self.max_cache_gb)
         right_layout.addWidget(self.clear_document_cache_button)
         right_layout.addWidget(self.clear_cache_button)
@@ -268,9 +307,14 @@ class MainWindow(QMainWindow):
         self.splitter.addWidget(right)
         self.splitter.setSizes([300, 900, 300])
 
-        controls = QHBoxLayout()
+        playback_bar = QWidget()
+        playback_bar.setObjectName("playbackBar")
+        controls = QHBoxLayout(playback_bar)
+        controls.setContentsMargins(10, 7, 10, 7)
+        controls.setSpacing(8)
         self.previous_button = QPushButton("上一句")
         self.play_button = QPushButton("播放")
+        self.play_button.setProperty("kind", "primary")
         self.pause_button = QPushButton("暂停")
         self.stop_button = QPushButton("停止")
         self.next_button = QPushButton("下一句")
@@ -287,7 +331,7 @@ class MainWindow(QMainWindow):
         self.playback_position_label = QLabel("位置 0")
         controls.addStretch(1)
         controls.addWidget(self.playback_position_label)
-        root_layout.addLayout(controls)
+        root_layout.addWidget(playback_bar)
         self.setCentralWidget(root)
         self.setStatusBar(QStatusBar())
         self.statusBar().showMessage("Idle")
@@ -317,6 +361,7 @@ class MainWindow(QMainWindow):
         self.import_voice_button.clicked.connect(self._guard(self._import_voice_package))
         self.export_voice_button.clicked.connect(self._guard(self._export_voice_package))
         self.voice_combo.currentIndexChanged.connect(self._voice_settings_changed)
+        self.theme_combo.currentIndexChanged.connect(self._theme_changed)
         self.tier_combo.currentIndexChanged.connect(self._tier_changed)
         self.speed_spin.valueChanged.connect(self._synthesis_setting_changed)
         self.volume_spin.valueChanged.connect(self._volume_changed)
@@ -379,6 +424,13 @@ class MainWindow(QMainWindow):
         self._set_font_size(int(store.get("font_size", 18)))
         self.line_spacing.setValue(float(store.get("line_spacing", 1.4)))
         self.max_cache_gb.setValue(int(store.get("max_cache_gb", 20)))
+
+    def _theme_changed(self) -> None:
+        theme_id = str(self.theme_combo.currentData() or DEFAULT_THEME_ID)
+        theme = self.theme_manager.apply(theme_id)
+        self.services.settings.set("theme_id", theme.theme_id)
+        if self._last_highlight is not None:
+            self._highlight_unit("", *self._last_highlight)
 
     def _refresh_documents(self, select_id: UUID | None = None) -> None:
         selected = select_id or (self.current_document.document_id if self.current_document else None)
@@ -1226,7 +1278,7 @@ class MainWindow(QMainWindow):
         cursor.setPosition(end, QTextCursor.MoveMode.KeepAnchor)
         selection.cursor = cursor
         fmt = QTextCharFormat()
-        fmt.setBackground(QColor("#fff1a8"))
+        fmt.setBackground(QColor(self.theme_manager.current.reading_highlight))
         selection.format = fmt
         self.editor.setExtraSelections([selection])
         visible = self.editor.textCursor()

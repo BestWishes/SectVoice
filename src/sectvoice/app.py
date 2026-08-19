@@ -5,6 +5,7 @@ from pathlib import Path
 import shutil
 import sys
 
+from PySide6.QtGui import QFont
 from PySide6.QtWidgets import QApplication, QMessageBox
 
 from sectvoice.core.asr import ASRService
@@ -28,6 +29,8 @@ from sectvoice.reader.playback_controller import PlaybackController
 from sectvoice.reader.roles import RoleRepository
 from sectvoice.ui.main_window import MainWindow, MainWindowServices
 from sectvoice.ui.startup_wizard import StartupWizard
+from sectvoice.ui.branding import apply_application_icon, configure_windows_app_identity
+from sectvoice.ui.themes import DEFAULT_THEME_ID, ThemeManager
 
 
 def build_services(paths: AppPaths) -> MainWindowServices:
@@ -109,9 +112,14 @@ def _asr_worker_script(paths: AppPaths) -> Path:
 
 
 def main() -> int:
+    configure_windows_app_identity()
     app = QApplication(sys.argv)
     app.setApplicationName("SectVoice Reader")
+    app.setApplicationDisplayName("SectVoice 可定位的多角色本地朗读器")
     app.setOrganizationName("SectVoice")
+    app.setStyle("Fusion")
+    app.setFont(QFont("Microsoft YaHei UI", 10))
+    apply_application_icon(app)
     paths = AppPaths.discover()
     log_dir = paths.data / "logs"
     log_dir.mkdir(parents=True, exist_ok=True)
@@ -137,6 +145,12 @@ def main() -> int:
             )
     try:
         services = build_services(paths)
+        theme_manager = ThemeManager(app)
+        active_theme = theme_manager.apply(
+            str(services.settings.get("theme_id", DEFAULT_THEME_ID))
+        )
+        # Normalize unknown values left by a removed development theme.
+        services.settings.set("theme_id", active_theme.theme_id)
         diagnostics = lambda: run_startup_diagnostics(
             paths, services.media, services.packages, services.asr.is_available
         )
@@ -147,7 +161,7 @@ def main() -> int:
                 services.engines.shutdown()
                 return 1
             services.settings.set("startup_completed", True)
-        window = MainWindow(services)
+        window = MainWindow(services, theme_manager=theme_manager)
         window.show()
         return app.exec()
     except Exception as exc:

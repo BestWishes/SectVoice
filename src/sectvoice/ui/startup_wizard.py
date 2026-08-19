@@ -28,7 +28,7 @@ class StartupWizard(QDialog):
         self.resize(820, 560)
         layout = QVBoxLayout(self)
         title = QLabel("首次启动检查")
-        title.setStyleSheet("font-size: 20px; font-weight: 600;")
+        title.setObjectName("documentTitle")
         layout.addWidget(title)
         description = QLabel(
             "Reader不会静默下载大型模型。核心环境通过后可以进入；Basic和Standard可在主界面的语音包管理器中任选下载，实际创建声音时会生成测试语音。"

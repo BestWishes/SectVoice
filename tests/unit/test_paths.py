@@ -25,5 +25,7 @@ def test_source_checkout_remains_the_default(monkeypatch) -> None:
 
     paths = AppPaths.discover()
 
-    assert paths.source.name == "source"
-    assert paths.root == paths.source.parent
+    checkout = Path(__file__).resolve().parents[2]
+    assert paths.source == checkout
+    expected_root = checkout.parent if checkout.name.lower() == "source" else checkout
+    assert paths.root == expected_root
