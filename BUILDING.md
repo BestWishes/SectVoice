@@ -33,6 +33,8 @@ Keep `SECTVOICE_ROOT` outside the repository. SectVoice creates `runtime`, `mode
 git diff --check
 ```
 
+SectVoice intentionally does not use GitHub Actions or other hosted CI. Contributors and maintainers run verification locally and record the relevant results in pull requests and release evidence.
+
 The model-independent suite may use fake engine clients at protocol boundaries. A release is not accepted until the real Basic and Standard smoke/long-run scripts also pass with real cloned audio.
 
 ## Engine/model packages

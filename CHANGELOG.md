@@ -5,6 +5,9 @@
 - Added attributed Experience Female and Experience Male VoiceProfiles derived from the Apache-2.0 OpenMOSS/MOSS-TTS-Nano sample recordings.
 - Added one-time, hash-verified first-start seeding that preserves an existing matching VoiceId and does not resurrect a profile after the user deletes it.
 - Extended PyInstaller/wheel packaging and the release privacy audit to admit only exact catalogue-approved built-in VoicePackages while continuing to reject all other voice and user-data assets.
+- Marked v0.3.3 as a completed, accepted release on 2026-08-20.
+- Removed GitHub Actions; project verification is intentionally performed and recorded locally.
+- Documented the unsigned Windows installer as a deliberate distribution choice rather than an unfinished release task.
 
 ## 0.3.2 - 2026-08-19
 

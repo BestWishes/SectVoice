@@ -1,6 +1,6 @@
 # SectVoice development status
 
-Last updated: 2026-08-19
+Last updated: 2026-08-20
 
 ## Current release line
 
@@ -9,7 +9,10 @@ Last updated: 2026-08-19
 - Basic and Standard model assets remain the existing immutable downloads and are not uploaded again.
 - Reader, Basic, Standard, reusable voice profiles, continuous windows, multi-role reading, rapid seek, cache reuse, package management and in-app updates are implemented.
 
-## v0.3.3 work
+## v0.3.3 completed acceptance
+
+- The product owner accepted v0.3.3 as complete on 2026-08-20. No additional clean-machine installation follow-up remains open for this release.
+- The project intentionally does not use GitHub Actions or other hosted CI. Local automated checks, real-engine smoke tests, package audits and recorded manual evidence are the release authority.
 
 - Identified Experience Female and Experience Male as exact copies of OpenMOSS/MOSS-TTS-Nano `zh_4.wav` and `zh_3.wav` at pinned revision `cc7bdf19c7639c0870dab22045a33b442760f6be`; both source SHA-256 values match upstream.
 - Exported clean VoicePackages containing ready Basic and Standard payloads, totalling about 5.4 MB compressed, with no absolute developer path in any text member.
@@ -65,6 +68,7 @@ Last updated: 2026-08-19
 
 | Reference | Purpose |
 |---|---|
+| `v0.3.3` | Current accepted release with built-in experience voices and the latest Reader fixes |
 | `v0.3.2` | Persistent-button and empty-SpeechUnit boundary recovery release; reuses unchanged engine packages |
 | `v0.3.1` | Reader theme and Windows branding release; reuses the unchanged v0.3.0 engine packages |
 | `v0.3.0` | Public open-source/release baseline before theme and branding work |
@@ -74,12 +78,12 @@ Last updated: 2026-08-19
 
 ## Release gate
 
-- Automated tests, compile check and diff check pass.
+- Local automated tests (182), compile check and diff check pass; the project does not use GitHub Actions.
 - The v0.3.0 voice path is unchanged from the real-audio v0.2.5 baseline; Basic/Standard real synthesis, continuous playback and rapid seek evidence remains recorded in `VALIDATION_REPORT.md`.
 - Installer build, component-size metadata and update manifests are complete.
 - Release privacy audit and SHA-256 manifest pass.
 - The frozen Reader and package CLI start successfully from the finalized Core tree.
-- A true Inno install cannot finish inside the current managed sandbox because registry and Start Menu writes are denied; the same installer must receive one final clean-machine install check after remote publication.
+- The managed-sandbox Inno run could not finish because registry and Start Menu writes were denied. This remains historical environment evidence, not an open v0.3.3 blocker; the product owner accepted v0.3.3 as complete on 2026-08-20.
 - The v0.3.2 Reader release reuses the unchanged v0.3.0 Basic and Standard assets instead of uploading several gigabytes of model data again.
 
 ## Known boundaries
@@ -87,5 +91,6 @@ Last updated: 2026-08-19
 - Standard cold start normally takes about 10–15 seconds on the validated machine.
 - Basic and Standard may sound different for the same VoiceId because their private payloads and models differ.
 - No independently validated emotion-control interface is exposed for the current engines.
-- The installer is not code-signed.
+- The installer is intentionally distributed unsigned for now. Windows may display “Unknown publisher”; this is a documented release choice, not an unfinished v0.3.3 task.
+- GitHub Actions and other hosted CI are intentionally outside the project plan.
 - The official Windows bundle includes GPL components; see `THIRD_PARTY_NOTICES.md` before redistribution.

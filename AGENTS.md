@@ -12,3 +12,4 @@
 - Record current work in `DEVELOPMENT_PROGRESS.md`; keep historical evidence in Git and `VALIDATION_REPORT.md` rather than growing a session diary.
 - Third-party code and model updates require an explicit source, pinned version, license review and notice update.
 - Use `apply_patch` for source and documentation edits. Preserve unrelated user changes.
+- This project intentionally does not use GitHub Actions or other hosted CI. Run verification locally and record release evidence in `DEVELOPMENT_PROGRESS.md` and `VALIDATION_REPORT.md`; do not add workflow files.

@@ -1,9 +1,18 @@
 # SectVoice public validation summary
 
-Validation date: 2026-08-18
+Validation last updated: 2026-08-20
 Machine: Windows 11 Pro, Intel i5-12490F, 31.8 GiB RAM, NVIDIA RTX 2060 SUPER 8 GiB
 
 This public summary contains measured results but omits user voices, recordings, database contents and private artifact paths.
+
+## v0.3.3 accepted release
+
+- The product owner accepted v0.3.3 as complete on 2026-08-20.
+- 182 local automated tests, `compileall` and repository diff checks passed.
+- Fresh-root smoke tests generated non-empty audible WAV output for both built-in experience voices on both the Basic and Standard engines.
+- The frozen Reader first-launch path imported exactly two built-in voices and prepared four ready engine payloads.
+- Reader Core, installer checksums, privacy auditing and remote release-asset verification passed.
+- SectVoice intentionally does not use GitHub Actions or other hosted CI; this report records the local and manual release evidence.
 
 ## Stable v0.2.5 evidence
 
@@ -47,6 +56,6 @@ This public summary contains measured results but omits user voices, recordings,
 - The finalized v0.3.0 directory contains the installer, Core, Basic, nine Standard parts, catalog/update manifests, public notices and 20 matching SHA-256 entries.
 - Standard release metadata and archive paths contain no `Distance 0.1.3` module or dist-info directory.
 - The installer uses actual artifact sizes: Core 1,067,437,110 installed bytes; Basic 420,796,975 download / 881,108,266 installed bytes; Standard 5,434,716,749 download / 8,577,894,613 installed bytes.
-- Managed-sandbox installation copied all files, then correctly rolled back when Windows denied the sandbox access to the Start Menu and HKCU uninstall registry key. This is an environment limitation, not a file-copy or installer-build failure; a final unrestricted clean-machine install remains required.
+- Managed-sandbox installation copied all files, then correctly rolled back when Windows denied the sandbox access to the Start Menu and HKCU uninstall registry key. This remains recorded as an environment limitation. On 2026-08-20, the product owner accepted the published v0.3.3 release as complete, so a separate unrestricted clean-machine run is not an open v0.3.3 requirement.
 
 Hardware and driver combinations differ. Real engine smoke tests must be repeated when changing PyTorch, CUDA, ONNX Runtime, FFmpeg, an engine commit or model weights.
