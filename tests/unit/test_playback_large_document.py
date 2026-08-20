@@ -88,3 +88,35 @@ def test_prefetch_failure_drains_completed_audio_before_reporting(qtbot) -> None
     assert controller.state == "Error"
     assert errors == ["下一句生成失败"]
     assert completed == []
+
+
+def test_pause_is_transport_state_and_survives_background_status(qtbot) -> None:
+    audio = Mock()
+    controller = PlaybackController(
+        runtime=Mock(),
+        audio=audio,
+        engines=Mock(),
+        voices=Mock(),
+        documents=Mock(),
+        roles=Mock(),
+    )
+    states: list[tuple[str, str]] = []
+    controller.stateChanged.connect(lambda state, message: states.append((state, message)))
+    controller.state = "Preparing"
+
+    controller.pause()
+
+    assert controller.is_paused
+    assert controller.state == "Paused"
+    audio.pause.assert_called_once_with()
+
+    for runtime_state in ("LoadingModel", "Preparing", "Generating", "Playing"):
+        controller._set_state(runtime_state, "后台仍在准备")
+        assert controller.state == "Paused"
+
+    controller.resume()
+
+    assert not controller.is_paused
+    assert controller.state == "Playing"
+    audio.resume.assert_called_once_with()
+    assert states == [("Paused", "已暂停"), ("Playing", "继续朗读")]

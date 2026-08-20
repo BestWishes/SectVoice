@@ -5,6 +5,17 @@ Machine: Windows 11 Pro, Intel i5-12490F, 31.8 GiB RAM, NVIDIA RTX 2060 SUPER 8 
 
 This public summary contains measured results but omits user voices, recordings, database contents and private artifact paths.
 
+## v0.3.4 pause/resume bug-fix release
+
+- Reproduced the defect in the source path: the visible Continue state was still connected to `pause()`, while concurrent preparation/alignment progress could replace the displayed paused state.
+- The playback controller now keeps transport pause independent from background model/pre-generation stages; the UI invokes `resume()` from both Continue entry points.
+- Controller and main-window regressions cover pause, background `Preparing` status, state preservation and resume.
+- 184 local automated tests, `compileall` and repository diff checks passed.
+- PyInstaller produced the Reader and package-manager executables; package CLI startup and a fresh-root frozen Reader startup smoke check passed without loading Basic or Standard.
+- The finalized Core ZIP is 663,480,099 bytes (`bed269f9bf93745470f831c786ea3110eb92356438cd189f2f65695b72abef0e`).
+- The finalized unsigned installer is 581,386,169 bytes (`a503240e71c8c798ff61e937389d0f17ad06494408923d308968b727927a5515`).
+- All ten finalized release files match `SHA256SUMS.txt`; the release privacy audit passed. Existing immutable Basic and Standard package assets are reused because no synthesis/model path changed.
+
 ## v0.3.3 accepted release
 
 - The product owner accepted v0.3.3 as complete on 2026-08-20.

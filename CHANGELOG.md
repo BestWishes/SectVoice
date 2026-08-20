@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.3.4 - 2026-08-20
+
+- Fixed the visible Pause/Continue control so its Continue state calls the real audio resume path.
+- Kept transport pause independent from background model loading, preparation, alignment validation and generation status.
+- Prevented background “checking segment completeness and word boundaries” progress from replacing the paused state or disabling resume.
+- Added controller- and UI-level regressions for pause, background preparation and resume.
+
 ## 0.3.3 - 2026-08-19
 
 - Added attributed Experience Female and Experience Male VoiceProfiles derived from the Apache-2.0 OpenMOSS/MOSS-TTS-Nano sample recordings.

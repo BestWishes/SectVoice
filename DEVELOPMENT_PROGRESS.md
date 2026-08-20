@@ -4,10 +4,22 @@ Last updated: 2026-08-20
 
 ## Current release line
 
-- Stable public source and downloadable release: v0.3.3.
-- v0.3.3 ships two attributed, hash-pinned OpenMOSS-derived experience voices and imports them once for a fresh data root.
+- Stable public source and downloadable release: v0.3.4.
+- v0.3.4 fixes pause/resume without changing the accepted v0.3.3 voice, synthesis or model-package paths.
+- The release continues to ship the two attributed, hash-pinned OpenMOSS-derived experience voices introduced in v0.3.3 and imports them once for a fresh data root.
 - Basic and Standard model assets remain the existing immutable downloads and are not uploaded again.
 - Reader, Basic, Standard, reusable voice profiles, continuous windows, multi-role reading, rapid seek, cache reuse, package management and in-app updates are implemented.
+
+## v0.3.4 pause/resume fix
+
+- Corrected the Pause/Continue button: its Continue state now invokes the real resume path instead of calling pause a second time.
+- Added an explicit transport-pause flag independent from model loading, preparation, alignment validation and pre-generation. Background work may continue filling the queue while paused, but its status cannot replace `Paused` or disable Continue.
+- Play and Pause/Continue now both use the controller's actual transport state, avoiding a UI label/state race.
+- Added controller- and UI-level regressions covering pause during background preparation, ignored background status updates and successful resume.
+- Full regression status: 184 passed; `compileall` and repository diff checks passed.
+- The frozen package CLI and frozen Reader startup smoke checks passed without loading a speech model.
+- The finalized release contains a 663,480,099-byte Core ZIP and a 581,386,169-byte unsigned installer. All ten files match `SHA256SUMS.txt`, and the privacy audit passed.
+- Basic and Standard continue to reference the existing immutable engine/model assets; this Reader-only fix does not duplicate their multi-gigabyte downloads.
 
 ## v0.3.3 completed acceptance
 
@@ -68,7 +80,8 @@ Last updated: 2026-08-20
 
 | Reference | Purpose |
 |---|---|
-| `v0.3.3` | Current accepted release with built-in experience voices and the latest Reader fixes |
+| `v0.3.4` | Current pause/resume bug-fix release; reuses unchanged v0.3.3 voices and engine packages |
+| `v0.3.3` | Accepted release with built-in experience voices |
 | `v0.3.2` | Persistent-button and empty-SpeechUnit boundary recovery release; reuses unchanged engine packages |
 | `v0.3.1` | Reader theme and Windows branding release; reuses the unchanged v0.3.0 engine packages |
 | `v0.3.0` | Public open-source/release baseline before theme and branding work |
@@ -78,19 +91,19 @@ Last updated: 2026-08-20
 
 ## Release gate
 
-- Local automated tests (182), compile check and diff check pass; the project does not use GitHub Actions.
+- Local automated tests (184), compile check and diff check pass; the project does not use GitHub Actions.
 - The v0.3.0 voice path is unchanged from the real-audio v0.2.5 baseline; Basic/Standard real synthesis, continuous playback and rapid seek evidence remains recorded in `VALIDATION_REPORT.md`.
 - Installer build, component-size metadata and update manifests are complete.
 - Release privacy audit and SHA-256 manifest pass.
 - The frozen Reader and package CLI start successfully from the finalized Core tree.
 - The managed-sandbox Inno run could not finish because registry and Start Menu writes were denied. This remains historical environment evidence, not an open v0.3.3 blocker; the product owner accepted v0.3.3 as complete on 2026-08-20.
-- The v0.3.2 Reader release reuses the unchanged v0.3.0 Basic and Standard assets instead of uploading several gigabytes of model data again.
+- The v0.3.4 Reader release reuses the unchanged Basic and Standard assets instead of uploading several gigabytes of model data again.
 
 ## Known boundaries
 
 - Standard cold start normally takes about 10–15 seconds on the validated machine.
 - Basic and Standard may sound different for the same VoiceId because their private payloads and models differ.
 - No independently validated emotion-control interface is exposed for the current engines.
-- The installer is intentionally distributed unsigned for now. Windows may display “Unknown publisher”; this is a documented release choice, not an unfinished v0.3.3 task.
+- The installer is intentionally distributed unsigned for now. Windows may display “Unknown publisher”; this is a documented release choice, not an unfinished release task.
 - GitHub Actions and other hosted CI are intentionally outside the project plan.
 - The official Windows bundle includes GPL components; see `THIRD_PARTY_NOTICES.md` before redistribution.

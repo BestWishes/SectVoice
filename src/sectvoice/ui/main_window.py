@@ -369,7 +369,7 @@ class MainWindow(QMainWindow):
         self.restart_timer.timeout.connect(self._restart_if_playing)
         self.previous_button.clicked.connect(self._guard(self.services.playback.previous))
         self.play_button.clicked.connect(self._guard(self._play_or_resume))
-        self.pause_button.clicked.connect(self.services.playback.pause)
+        self.pause_button.clicked.connect(self._pause_or_resume)
         self.stop_button.clicked.connect(self.services.playback.stop)
         self.next_button.clicked.connect(self._guard(self.services.playback.next))
         self.retry_button.clicked.connect(self._guard(self.services.playback.play))
@@ -812,12 +812,18 @@ class MainWindow(QMainWindow):
     def _play_or_resume(self) -> None:
         def play_saved_document() -> None:
             self._update_playback_settings()
-            if self.services.playback.state == "Paused":
+            if self.services.playback.is_paused:
                 self.services.playback.resume()
             else:
                 self.services.playback.play()
 
         self._after_current_text_saved(play_saved_document)
+
+    def _pause_or_resume(self) -> None:
+        if self.services.playback.is_paused:
+            self.services.playback.resume()
+        else:
+            self.services.playback.pause()
 
     def _tier_changed(self) -> None:
         tier = Tier(self.tier_combo.currentData())
@@ -1267,7 +1273,9 @@ class MainWindow(QMainWindow):
     @Slot(str, str)
     def _playback_state(self, state: str, message: str) -> None:
         self.statusBar().showMessage(f"{state} · {message}")
-        self.pause_button.setText("继续" if state == "Paused" else "暂停")
+        self.pause_button.setText(
+            "继续" if self.services.playback.is_paused else "暂停"
+        )
 
     @Slot(str, int, int)
     def _highlight_unit(self, _unit_id: str, start: int, end: int) -> None:

@@ -54,6 +54,9 @@ class PlaybackController(QObject):
         self._session_positions: dict[UUID, int] = {}
         self._session_units: dict[UUID, SpeechUnit] = {}
         self._pending_runtime_error: str | None = None
+        # 播放器暂停与后台生成阶段是两个正交状态。暂停时仍允许VoiceRuntime
+        # 预生成后续音频，但它的Preparing/Generating回调不能解除音频暂停。
+        self._paused = False
 
         self.audio.unitStarted.connect(self._on_unit_started)
         self.audio.underrun.connect(
@@ -93,6 +96,7 @@ class PlaybackController(QObject):
         # Audible stop happens before session invalidation and new generation.
         self.audio.stop()
         self.runtime.stop()
+        self._paused = False
         self._pending_runtime_error = None
         self._set_state("Seeking", "正在跳转到新的朗读位置")
         located, offset = document.mapping.locate(position)
@@ -129,20 +133,25 @@ class PlaybackController(QObject):
             raise
 
     def pause(self) -> None:
-        if self.state not in {"Playing", "Generating"}:
+        if self._paused or self.state in {"Idle", "Error", "Stopping", "Seeking"}:
             return
+        self._paused = True
         self.audio.pause()
         self._set_state("Paused", "已暂停")
 
     def resume(self) -> None:
-        if self.state != "Paused":
+        if not self._paused:
             return
+        self._paused = False
         self.audio.resume()
-        # 用户主动继续必须越过“暂停时忽略后台状态”的保护条件。
-        self.state = "Playing"
-        self.stateChanged.emit("Playing", "继续朗读")
+        self._set_state("Playing", "继续朗读")
+
+    @property
+    def is_paused(self) -> bool:
+        return self._paused
 
     def stop(self) -> None:
+        self._paused = False
         self.audio.stop()
         self.runtime.stop()
         self._pending_runtime_error = None
@@ -247,6 +256,7 @@ class PlaybackController(QObject):
 
     @Slot()
     def _on_drained(self) -> None:
+        self._paused = False
         if self._pending_runtime_error is not None:
             message = self._pending_runtime_error
             self._pending_runtime_error = None
@@ -267,6 +277,7 @@ class PlaybackController(QObject):
 
     @Slot(str)
     def _on_error(self, message: str) -> None:
+        self._paused = False
         self.audio.stop()
         self.runtime.stop()
         self._pending_runtime_error = None
@@ -275,7 +286,12 @@ class PlaybackController(QObject):
 
     @Slot(str, str)
     def _set_state(self, state: str, message: str) -> None:
-        if self.state == "Paused" and state in {"Generating", "Playing"}:
+        if self._paused and state in {
+            "LoadingModel",
+            "Preparing",
+            "Generating",
+            "Playing",
+        }:
             return
         self.state = state
         self.stateChanged.emit(state, message)
