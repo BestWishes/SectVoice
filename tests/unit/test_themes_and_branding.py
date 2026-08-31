@@ -6,7 +6,11 @@ from PySide6.QtGui import QIcon, QPalette
 
 from sectvoice.app import build_services
 from sectvoice.paths import AppPaths
-from sectvoice.ui.branding import apply_application_icon, application_icon_path
+from sectvoice.ui.branding import (
+    WINDOWS_APP_USER_MODEL_ID,
+    apply_application_icon,
+    application_icon_path,
+)
 from sectvoice.ui.main_window import MainWindow
 from sectvoice.ui.themes import (
     DEFAULT_THEME_ID,
@@ -61,6 +65,13 @@ def test_distribution_builds_use_the_same_windows_icon() -> None:
     assert '"sectvoice/assets/builtin_voices"' in spec
     assert "SetupIconFile=..\\src\\sectvoice\\assets\\VoiceIcon.ico" in installer
     assert "UninstallDisplayIcon={app}\\app\\SectVoiceReader.exe" in installer
+    assert (
+        f'#define ReaderAppUserModelID "{WINDOWS_APP_USER_MODEL_ID}"' in installer
+    )
+    assert installer.count(
+        'IconFilename: "{app}\\app\\SectVoiceReader.exe"; IconIndex: 0; '
+        'AppUserModelID: "{#ReaderAppUserModelID}"'
+    ) == 2
 
 
 def test_main_window_theme_selection_is_applied_and_persisted(

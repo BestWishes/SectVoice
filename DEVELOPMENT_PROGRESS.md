@@ -10,6 +10,12 @@ Last updated: 2026-08-20
 - Basic and Standard model assets remain the existing immutable downloads and are not uploaded again.
 - Reader, Basic, Standard, reusable voice profiles, continuous windows, multi-role reading, rapid seek, cache reuse, package management and in-app updates are implemented.
 
+## Next release staging (not published)
+
+- The installed Start Menu and optional desktop shortcuts now declare the same `BestWishes.SectVoice.Reader` AppUserModelID already used by the Reader process.
+- Both shortcuts explicitly select icon index 0 from `SectVoiceReader.exe` instead of leaving Windows Shell to infer the icon source.
+- This addresses intermittent generic taskbar icons after first launch or upgrade without changing the current v0.3.4 executable, installer or public release. Existing taskbar pins may need to be unpinned and pinned again after the future installer upgrade so Windows discards their old cached shortcut metadata.
+
 ## v0.3.4 pause/resume fix
 
 - Corrected the Pause/Continue button: its Continue state now invokes the real resume path instead of calling pause a second time.

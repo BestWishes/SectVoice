@@ -2,6 +2,7 @@
   #define AppVersion "0.3.4"
 #endif
 #define CatalogUrl "https://github.com/BestWishes/SectVoice-Downloads/releases/latest/download/catalog.json"
+#define ReaderAppUserModelID "BestWishes.SectVoice.Reader"
 #ifndef CoreInstalledBytes
   #define CoreInstalledBytes 1055264569
 #endif
@@ -67,8 +68,8 @@ Name: "desktopicon"; Description: "创建桌面快捷方式"; GroupDescription: 
 Source: "{#ReleaseRoot}\{#ReleaseAssetDir}\core-root\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs; Components: core
 
 [Icons]
-Name: "{group}\SectVoice Reader"; Filename: "{app}\app\SectVoiceReader.exe"; WorkingDir: "{app}"
-Name: "{autodesktop}\SectVoice Reader"; Filename: "{app}\app\SectVoiceReader.exe"; WorkingDir: "{app}"; Tasks: desktopicon
+Name: "{group}\SectVoice Reader"; Filename: "{app}\app\SectVoiceReader.exe"; WorkingDir: "{app}"; IconFilename: "{app}\app\SectVoiceReader.exe"; IconIndex: 0; AppUserModelID: "{#ReaderAppUserModelID}"
+Name: "{autodesktop}\SectVoice Reader"; Filename: "{app}\app\SectVoiceReader.exe"; WorkingDir: "{app}"; IconFilename: "{app}\app\SectVoiceReader.exe"; IconIndex: 0; AppUserModelID: "{#ReaderAppUserModelID}"; Tasks: desktopicon
 
 [Run]
 Filename: "{app}\app\SectVoiceReader.exe"; Description: "启动 SectVoice Reader"; Flags: nowait postinstall skipifsilent; Components: core

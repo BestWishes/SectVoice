@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Give installed Start Menu and desktop shortcuts the same explicit Windows AppUserModelID as the Reader process and an explicit executable icon source, avoiding intermittent generic taskbar icons caused by Shell identity/icon heuristics.
+
 ## 0.3.4 - 2026-08-20
 
 - Fixed the visible Pause/Continue control so its Continue state calls the real audio resume path.
